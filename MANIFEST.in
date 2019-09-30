@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include counting_machine *.css
+recursive-include counting_machine *.csv
+recursive-include counting_machine *.html
+recursive-include counting_machine *.ico
+recursive-include counting_machine *.js
+recursive-include counting_machine *.json
+recursive-include counting_machine *.md
+recursive-include counting_machine *.png
+recursive-include counting_machine *.py
+recursive-include counting_machine *.svg
+recursive-include counting_machine *.txt
+recursive-exclude counting_machine *.pyc
