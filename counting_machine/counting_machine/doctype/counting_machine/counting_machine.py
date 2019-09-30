@@ -17,7 +17,6 @@ def get_cm(rf_id='',mesin_id=''):
 	filters = {
 		"workstation": ["=",mesin_id],
 		"employee": ["=",employee_id]
-		# "job_started": ["=",1]
 		}
 	
 	job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','name'])
@@ -41,7 +40,7 @@ def get_cm(rf_id='',mesin_id=''):
 def set_actual(job_id,actual):
 	filters = {
 		"parent": ["=",job_id],
-		# "job_started": ["=",1]
+		"job_started": ["=",1]
 		}
 	job_card_time = frappe.db.get_value('Job Card Time Log', filters, '*')
 	frappe.db.set_value("Job Card Time Log", job_card_time['name'], "actual", actual)
