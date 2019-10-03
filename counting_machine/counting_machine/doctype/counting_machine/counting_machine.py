@@ -13,10 +13,15 @@ class CountingMachine(Document):
 def get_cm(rf_id='',mesin_id=''):
 
 	data_employee = get_employee(rf_id)
+	
+	if(data_employee['employee_id'] == "0"):
+		return {'status':'Employee not found'}
+
 	employee_id = data_employee['employee_id']
 	filters = {
 		"workstation": ["=",mesin_id],
-		"employee": ["=",employee_id]
+		"employee": ["=",employee_id],
+		"docstatus":0
 		}
 	
 	job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','name'])
@@ -28,27 +33,35 @@ def get_cm(rf_id='',mesin_id=''):
 
 		job_id = job_card[2]
 		frappe.db.set_value("Job Card", job_id, "job_started", job_started)
-	
+		# return 12233
 		return {
 			'status' : job_card[0],
 			'employee_name' : data_employee['employee_name'],
-			'target' : (job_card[1]),
+			'target' : int(job_card[1]),
 			'mesin_id' : mesin_id,
 			'job_id' : job_id
 		}
 	else:
 		return {'status':'Job Card not available'}
 
+
 @frappe.whitelist()
-def set_actual(job_id,actual):
+def set_actual(mesin_id,actual):
+
+	filters = {"workstation": ["=",mesin_id]}	
+	job_id = frappe.db.get_value('Job Card', filters, ['name'])	
 	filters = {
 		"parent": ["=",job_id],
-		"job_started": ["=",1]
+		# "job_started": ["=",1]
 		}
+	# return filters
 	job_card_time = frappe.db.get_value('Job Card Time Log', filters, '*')
-	frappe.db.set_value("Job Card Time Log", job_card_time['name'], "actual", actual)
-		
-	return {'status' : 1}
+	# return job_card_time
+	if(job_card_time):
+		frappe.db.set_value("Job Card Time Log", job_card_time['name'], "actual", actual)
+		return {'status' : 1}
+	else:
+		return {'status' : 0}
 
 
 def get_employee(rf_id):
