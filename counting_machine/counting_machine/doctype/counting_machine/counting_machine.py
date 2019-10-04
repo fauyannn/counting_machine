@@ -99,7 +99,7 @@ def get_cm(rf_id='',mesin_id=''):
 			ignore_permissions=True, # ignore write permissions during insert
 			ignore_version=True # do not create a version record
 		)
-
+		frappe.db.commit()
 		# return data
 
 		# job_card = frappe.db.set_value("Job Card", job_id, "job_started", job_started)
