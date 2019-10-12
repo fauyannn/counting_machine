@@ -4,7 +4,9 @@
 
 from __future__ import unicode_literals
 import frappe
+from frappe import _
 from frappe.model.document import Document
+from datetime import datetime
 
 class CountingMachine(Document):
 	pass
@@ -34,37 +36,20 @@ def get_cm(rf_id='',mesin_id=''):
 		for dt in data.time_logs:
 			_count = dt.idx
 		# return dt
-		_now = frappe.utils.now()
+		_now = datetime.now()
 		_job_started = 1
 		if (int(job_card[0]) > 0):
 			_job_started = 0
-			newtime = {
-				"from_time": dt.from_time,
-				"docstatus": dt.docstatus,
-				"doctype": dt.doctype,
-				"name": dt.name,
-				"owner": dt.owner,
-				"completed_qty": dt.completed_qty,
-				"parent": job_id,
-				"parentfield": dt.parentfield,
-				"parenttype": dt.parenttype,
-				"idx": _count,
-				"actual": dt.actual,
-				"time_in_mins": dt.time_in_mins,
-				"modified_by": dt.modified_by,
-				"modified": _now,
-				"creation": dt.creation,
-				"not_good": dt.not_good,
-				"to_time": _now
-			}
+			
 			# data.modified = _now
+			data.started_time = data.started_time
 			data.__unsaved = 1
 			data.job_started = 0
 			data.time_logs[(_count-1)].parent = dt.parent
 			data.time_logs[(_count-1)].idx = dt.idx
 			data.time_logs[(_count-1)].name = dt.name
 			data.time_logs[(_count-1)].from_time = dt.from_time
-			data.time_logs[(_count-1)].to_time = frappe.utils.now()
+			data.time_logs[(_count-1)].to_time = _now
 			data.time_logs[(_count-1)].actual = dt.actual
 			data.time_logs[(_count-1)].__unsaved = 1
 			# data.time_logs[(_count-1)].time_in_mins = dt.time_in_mins
@@ -77,7 +62,6 @@ def get_cm(rf_id='',mesin_id=''):
 				"from_time": _now,
 				"docstatus": 0,
 				"doctype": "Job Card Time Log",
-				"name": "New Job Card Time Log {}".format(new_idx),
 				"__islocal": 1,
 				"__unsaved": 1,
 				"owner": "Administrator",
@@ -101,9 +85,7 @@ def get_cm(rf_id='',mesin_id=''):
 		)
 		frappe.db.commit()
 		# return data
-
-		# job_card = frappe.db.set_value("Job Card", job_id, "job_started", job_started)
-		# return job_card
+		
 		filters = {
 			"name": ["=",job_id],
 		}
@@ -132,9 +114,52 @@ def set_actual(mesin_id,actual):
 		return {'status':'job card hasn\'t started yet'}
 
 	job_card_time = frappe.db.get_value('Job Card Time Log', filters, '*', as_dict=True, order_by='idx desc')
+	# job_card_time = frappe.db.get_value('Job Card Time Log', filters, '*')
 	# return job_card_time
 	if job_card_time:
+		filters = {
+		"parent": ["=",job_id],
+		"time_log" :["=",job_card_time['idx']]
+		}
+		cm = frappe.db.get_value('Counting Machine', filters, '*', as_dict=True, order_by='time desc')
+		_now = datetime.now()
+		if(cm):			
+			last_time = cm['time']
+		else:
+			last_time = job_card_time['from_time']
+
+		filters = {
+			"parent": ["=",job_id]
+		}
+		total_idx = frappe.db.count('Counting Machine', filters)
+		idx = 1
+		if(total_idx):
+			idx = total_idx +1
+		time_in_seconds = _now - last_time
+		# frappe.throw(_("{0} - {1} = {2}").format(_now,job_card_time['from_time'],time_in_seconds.seconds))
+		# return time_in_seconds.seconds
+		not_good = job_card_time['not_good']
+		completed_qty = float(actual) - float(not_good)
 		frappe.db.set_value("Job Card Time Log", job_card_time['name'], "actual", actual)
+		frappe.db.set_value("Job Card Time Log", job_card_time['name'], "completed_qty", completed_qty)
+		
+		doc = frappe.get_doc({
+			"doctype": "Counting Machine",
+			"idx": idx,
+			"parent": job_id,
+            "parenttype": "Job Card",
+            "parentfield": "time_cycle",
+			"job_card": job_id,
+			"time_log": job_card_time['idx'],
+			"time": _now,
+			"time_in_seconds":time_in_seconds.seconds
+		})
+		doc.save(
+			ignore_permissions=True, # ignore write permissions during insert
+			ignore_version=True # do not create a version record
+		)
+		frappe.db.commit()
+		# return cm
 		return {'status' : 1}
 	else:
 		return {'status' : 0}

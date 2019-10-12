@@ -3,6 +3,6 @@
 
 frappe.ui.form.on('Counting Machine', {
 	refresh: function(frm) {
-
+		
 	}
 });
