@@ -165,11 +165,6 @@ def set_actual(mesin_id,actual):
 		return {'status' : 0}
 
 
-@frappe.whitelist()
-def get_docu(job_id=211,xx=None):
-	return job_id
-
-
 def get_employee(rf_id):
 	filters = {
 		"rf_id" : ["=",rf_id]
