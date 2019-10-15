@@ -16,7 +16,7 @@ app_license = "GNU General Public License"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/counting_machine/css/counting_machine.css"
-# app_include_js = "/assets/counting_machine/js/counting_machine.js"
+app_include_js = "/assets/counting_machine/js/counting_machine.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/counting_machine/css/counting_machine.css"

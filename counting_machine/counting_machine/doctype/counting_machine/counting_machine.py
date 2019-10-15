@@ -25,7 +25,7 @@ def get_cm(rf_id='',mesin_id=''):
 		"employee": ["=",employee_id],
 		"docstatus":0
 		}
-	
+
 	job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','name'])
 	
 	if job_card:
@@ -174,3 +174,12 @@ def get_employee(rf_id):
 		return {'employee_id':data[0], 'employee_name':data[1]}
 	else:
 		return {'employee_id':'0', 'employee_name':'0'}
+
+@frappe.whitelist()
+def get_time_cycle(job_id, time_log_id):
+	filters = {
+			"parent": ["=",job_id],
+			"time_log": ["=",time_log_id]
+		}
+	doc = frappe.get_list("Counting Machine", filters, ['*'])
+	return doc
