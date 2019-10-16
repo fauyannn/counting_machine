@@ -1,4 +1,5 @@
 var xxx = 0;
+var total_row = 0;
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
 		not_good(frm, cdt, cdn)
@@ -54,62 +55,116 @@ frappe.ui.form.on('Job Card', {
 
 	function event_modal(frm, cdt, cdn,xxx){	
 		console.log('before click : '+xxx);
+		var limit_page_length = 10;
+		var job_id = cdn;
+		var limit_start = 0;
 		$(document).find('div[data-fieldname="time_logs"] a.btn-open-row span.octicon').on('click',function(){
-			
+			limit_start = 0;
 			if(xxx){			
 				console.log('after click : '+xxx);
 				var $this = $(this);
 				var $parent = $this.closest('.grid-row');
-				var job_id = cdn;
 				var idx = $parent.data('idx');
+				var nextpage = 2;
+
 
 				setTimeout(function(){
 					$this.parents('html').find('.form-in-grid [data-fieldname="time_cycle"]').html('<center>Loading...</center>')
 				},100)
 				
-			
-				$.ajax({
-					url:'/api/method/counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_time_cycle',
-					dataType:'json',
-					type:'GET',
-					data:{job_id:job_id,time_log_id:idx},				
-					success : function(data){
-						var _table = '<table class="table table-bordered">'+
-								'<thead>'+
-									'<tr>'+
-										'<th>No</th>'+
-										'<th>Time</th>'+
-										'<th>Time In Seconds</th>'+
-									'</tr>'+
-								'</thead>'+
-								'<tbody>';
-						if(data.message.total_data){
-							
-							$.each(data.message.doc,function(i, d){
-								_table += '<tr>'+
-										'<td align="center">'+(i+1)+'</td>'+
-										'<td align="left">'+d['time']+'</td>'+
-										'<td align="left">'+d['time_in_seconds']+'</td>'+									
-									'</tr>';
-							})					
-						} else {
-							_table += '<tr>'+
-								'<td colspan="3" align="center">no data found.</td>'+
-							'</tr>';
-						}
-						_table += '</tbody>'+
-								'</table>';
-						setTimeout(function(){
-							$this.parents('html').find('.form-in-grid [data-fieldname="time_cycle"]').html(_table)
-						},1000)
-					}
-
-				})		
-			// console.log('_req : ' + _req)		
+				get_data(job_id,idx,limit_start,limit_page_length,$this,'load',nextpage);
+						
 			}
+		})
+
+		$(document).on('click','button.my-btn-more',function(){
+			var $this = $(this);
+			// var $parent = $this.closest('.grid-row');
+			var idx = $this.data('idx');
+			var page = $this.data('nextpage')
+			var nextpage = parseInt(page + 1);
+				limit_start = parseInt(limit_start + limit_page_length);
+			
+			$this.parents('html').find('.list-paging-area .level-right button').html('Loading...')
+			
+			
+			get_data(job_id,idx,limit_start,limit_page_length,$this,'more',nextpage);
 		})
 	}	
 
+	function get_data(job_id,idx,limit_start,limit_page_length,$this,_status,nextpage){
+		var _table = '<table class="table table-time-cycle table-bordered">'+
+						'<thead>'+
+							'<tr>'+
+								'<th>No</th>'+
+								'<th>Time</th>'+
+								'<th>Time In Seconds</th>'+
+							'</tr>'+
+						'</thead>'+
+						'<tbody>';
+
+		var data_table = '';
+		
+		var end_table = '</tbody>'+
+						'</table>';
+
+		var pagination_table = '<div class="list-paging-area level" style="">'+
+				'<div class="level-left">'+
+					'<div class="btn-group">'+						
+							// '<button type="button" class="btn btn-default btn-sm btn-paging btn-info" data-value="20">20</button>'+
+							// '<button type="button" class="btn btn-default btn-sm btn-paging" data-value="100">100</button>'+						
+							// '<button type="button" class="btn btn-default btn-sm btn-paging" data-value="500">500</button>'+						
+					'</div>'+
+				'</div>'+
+				'<div class="level-right">'+
+					'<button class="btn btn-default btn-more btn-sm my-btn-more" data-nextpage="'+nextpage+'" data-idx="'+idx+'">'+
+						'More...'+
+					'</button>'+
+				'</div>'+
+			'</div>';		
+		$.ajax({
+			url:'/api/method/counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_time_cycle',
+			dataType:'json',
+			type:'GET',
+			data:{job_id:job_id,time_log_id:idx, limit_start:limit_start, limit_page_length:limit_page_length},				
+			success : function(data){
+				
+				if(data.message.total_data){
+					total_row = data.message.total_data;
+					var no = 0;
+					$.each(data.message.doc,function(i, d){
+						no = parseInt(i + 1 + limit_start);
+						data_table += '<tr>'+
+								'<td align="center">'+no+'</td>'+
+								'<td align="left">'+d['time']+'</td>'+
+								'<td align="left">'+d['time_in_seconds']+'</td>'+									
+							'</tr>';
+					})					
+				} else {
+					data_table += '<tr>'+
+						'<td colspan="3" align="center">no data found.</td>'+
+					'</tr>';
+				}
+				
+				setTimeout(function(){
+					if(_status == 'load'){
+						$this.parents('html').find('.form-in-grid [data-fieldname="time_cycle"]')
+						.html(_table+data_table+end_table+pagination_table)
+					} else {
+						$this.parents('html').find('.table-time-cycle tbody')
+						.append(data_table)
+						$this.parents('html').find('.list-paging-area .level-right button').html('More...')
+					}
+
+					if(data.message.total_data <= no){
+						$this.parents('html').find('.list-paging-area .level-right button').hide()
+					}
+					
+				},1000)
+			}
+
+		})
+	}
 	// $(document).ready(function(){
 		// 	var total_time_log = $('div[data-fieldname="time_logs"] .rows .grid-row').length
 		// 	console.log('total_time_log : '+total_time_log);

@@ -182,7 +182,7 @@ def get_employee(rf_id):
 		return {'employee_id':'0', 'employee_name':'0'}
 
 @frappe.whitelist()
-def get_time_cycle(job_id, time_log_id):
+def get_time_cycle(job_id, time_log_id, limit_start, limit_page_length):
 	
 	_doctype = "Counting Machine"
 	filters = {
@@ -193,9 +193,9 @@ def get_time_cycle(job_id, time_log_id):
 	doc = frappe.get_list(_doctype, 
 		filters = filters, 
 		fields = ['*'],
-		order_by='idx asc',
-		start=1,
-		page_length=2,
+		order_by='time asc',
+		limit_start=limit_start,
+		limit_page_length=limit_page_length,
 		as_list=False
 		)
 	total_data = frappe.db.count(_doctype, filters = filters)
