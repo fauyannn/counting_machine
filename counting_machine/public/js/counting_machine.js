@@ -144,6 +144,7 @@ frappe.ui.form.on('Job Card', {
 					data_table += '<tr>'+
 						'<td colspan="3" align="center">no data found.</td>'+
 					'</tr>';
+					pagination_table = '';
 				}
 				
 				setTimeout(function(){
