@@ -56,8 +56,7 @@ frappe.ui.form.on('Job Card', {
 		console.log('before click : '+xxx);
 		$(document).find('div[data-fieldname="time_logs"] a.btn-open-row span.octicon').on('click',function(){
 			
-			if(xxx){
-			
+			if(xxx){			
 				console.log('after click : '+xxx);
 				var $this = $(this);
 				var $parent = $this.closest('.grid-row');
@@ -67,7 +66,8 @@ frappe.ui.form.on('Job Card', {
 				setTimeout(function(){
 					$this.parents('html').find('.form-in-grid [data-fieldname="time_cycle"]').html('<center>Loading...</center>')
 				},100)
-							
+				
+			
 				$.ajax({
 					url:'/api/method/counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_time_cycle',
 					dataType:'json',
@@ -83,9 +83,9 @@ frappe.ui.form.on('Job Card', {
 									'</tr>'+
 								'</thead>'+
 								'<tbody>';
-						if(data.message.length){
+						if(data.message.total_data){
 							
-							$.each(data.message,function(i, d){
+							$.each(data.message.doc,function(i, d){
 								_table += '<tr>'+
 										'<td align="center">'+(i+1)+'</td>'+
 										'<td align="left">'+d['time']+'</td>'+

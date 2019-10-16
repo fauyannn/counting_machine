@@ -105,7 +105,7 @@ def get_cm(rf_id='',mesin_id=''):
 def set_actual(mesin_id,actual):
 
 	filters = {"workstation": ["=",mesin_id]}	
-	job_id,job_started = frappe.db.get_value('Job Card', filters, ['name','job_started'])	
+	job_id,job_started,for_quantity = frappe.db.get_value('Job Card', filters, ['name','job_started','for_quantity'])	
 	filters = {
 		"parent": ["=",job_id]
 		}
@@ -160,9 +160,15 @@ def set_actual(mesin_id,actual):
 		)
 		frappe.db.commit()
 		# return cm
-		return {'status' : 1}
+		return {
+			'status' : job_started,
+			'employee_name' : '',
+			'target' : int(for_quantity),
+			'mesin_id' : mesin_id,
+			'job_id' : job_id
+		}
 	else:
-		return {'status' : 0}
+		return {'status' : 'time log not available'}
 
 
 def get_employee(rf_id):
@@ -177,9 +183,21 @@ def get_employee(rf_id):
 
 @frappe.whitelist()
 def get_time_cycle(job_id, time_log_id):
+	
+	_doctype = "Counting Machine"
 	filters = {
 			"parent": ["=",job_id],
 			"time_log": ["=",time_log_id]
-		}
-	doc = frappe.get_list("Counting Machine", filters, ['*'])
+		}	
+
+	doc = frappe.get_list(_doctype, 
+		filters = filters, 
+		fields = ['*'],
+		order_by='idx asc',
+		start=1,
+		page_length=2,
+		as_list=False
+		)
+	total_data = frappe.db.count(_doctype, filters = filters)
+	return {"doc":doc, "total_data":total_data}
 	return doc
