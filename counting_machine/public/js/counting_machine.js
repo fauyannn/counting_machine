@@ -14,6 +14,7 @@ frappe.ui.form.on('Job Card', {
 // frappe.ui.form.on('Job Card Time Log', {
 // 	not_good: function (frm, cdt, cdn) { 
 	function not_good(){
+		$(document).off('keyup','div[data-fieldname="time_logs"] input[data-fieldname="not_good"]');
 		$(document).on('keyup','div[data-fieldname="time_logs"] input[data-fieldname="not_good"]', function(frm, cdt, cdn){
 			var $this = $(this);
 			var $parent = $this.closest('.grid-row');
@@ -58,6 +59,7 @@ frappe.ui.form.on('Job Card', {
 		var limit_page_length = 10;
 		var job_id = cdn;
 		var limit_start = 0;
+		$(document).find('div[data-fieldname="time_logs"] a.btn-open-row span.octicon').off()
 		$(document).find('div[data-fieldname="time_logs"] a.btn-open-row span.octicon').on('click',function(){
 			limit_start = 0;
 			if(xxx){			
@@ -77,6 +79,7 @@ frappe.ui.form.on('Job Card', {
 			}
 		})
 
+		$(document).off('keyup','input[name="_page"]')
 		$(document).on('keyup','input[name="_page"]', function(){
 			var $this = $(this);
 			var total_page = parseInt($this.parent().find('span.total-page').text());
@@ -87,6 +90,7 @@ frappe.ui.form.on('Job Card', {
 			}
 		})
 
+		$(document).off('click','button.my-btn-more');
 		$(document).on('click','button.my-btn-more',function(){
 			var $this = $(this);
 			// var $parent = $this.closest('.grid-row');
@@ -99,7 +103,7 @@ frappe.ui.form.on('Job Card', {
 			
 			
 			get_data(job_id,idx,limit_start,limit_page_length,$this,'more',page);
-		})
+		});
 	}	
 
 	function get_data(job_id,idx,limit_start,limit_page_length,$this,_status,page){
@@ -184,26 +188,3 @@ frappe.ui.form.on('Job Card', {
 
 		})
 	}
-	// $(document).ready(function(){
-		// 	var total_time_log = $('div[data-fieldname="time_logs"] .rows .grid-row').length
-		// 	console.log('total_time_log : '+total_time_log);
-		// 	var _select = '<select class="form-control"><option value="0"></option>';
-
-		// 	for(var i = 1; i <=total_time_log; i++){
-		// 		_select += '<option value="'+i+'">'+i+'</option>';
-		// 	}
-		// 	_select += '</select>'
-		// 	$('div[data-fieldname="select_time_log"]').html(_select)
-		// 	console.log(cdn)
-		// 	$(document).on('change','select[data-fieldname="select_time_log"]',function(){
-		// 		// $('.form-in-grid [data-fieldname="time_cycle"]').html('<center>Loading...</center>')
-		// 		var $this = $(this);
-		// 		var job_id = $this.parents('body').data('route').split('/');
-		// 			job_id = job_id[2];
-		// 		var idx = $this.val();
-		// 		var _req = null;
-		// 		console.log(job_id+' --- '+idx);
-		// 	})
-
-		// })
-
