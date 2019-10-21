@@ -1,12 +1,12 @@
 var xxx = 0;
 var total_row = 0;
+var total_page = 1;
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
 		not_good(frm, cdt, cdn)
 		xxx++;
-		// if(xxx <= 1){
-			event_modal(frm, cdt, cdn, xxx)
-		// }		
+		event_modal(frm, cdt, cdn, xxx)
+		
 	}
 });
 
@@ -54,26 +54,36 @@ frappe.ui.form.on('Job Card', {
 // });
 
 	function event_modal(frm, cdt, cdn,xxx){	
-		console.log('before click : '+xxx);
+		// console.log('before click : '+xxx);
 		var limit_page_length = 10;
 		var job_id = cdn;
 		var limit_start = 0;
 		$(document).find('div[data-fieldname="time_logs"] a.btn-open-row span.octicon').on('click',function(){
 			limit_start = 0;
 			if(xxx){			
-				console.log('after click : '+xxx);
+				// console.log('after click : '+xxx);
 				var $this = $(this);
 				var $parent = $this.closest('.grid-row');
 				var idx = $parent.data('idx');
-				var nextpage = 2;
+				var page = 1;
 
 
 				setTimeout(function(){
 					$this.parents('html').find('.form-in-grid [data-fieldname="time_cycle"]').html('<center>Loading...</center>')
 				},100)
 				
-				get_data(job_id,idx,limit_start,limit_page_length,$this,'load',nextpage);
+				get_data(job_id,idx,limit_start,limit_page_length,$this,'load',page);
 						
+			}
+		})
+
+		$(document).on('keyup','input[name="_page"]', function(){
+			var $this = $(this);
+			var total_page = parseInt($this.parent().find('span.total-page').text());
+			var page = parseInt($this.val());
+			// console.log(page+"x"+total_page);
+			if(page >= total_page){
+				$this.val(total_page);
 			}
 		})
 
@@ -81,18 +91,18 @@ frappe.ui.form.on('Job Card', {
 			var $this = $(this);
 			// var $parent = $this.closest('.grid-row');
 			var idx = $this.data('idx');
-			var page = $this.data('nextpage')
+			var page = $this.parent().find('input[name="_page"]').val();
 			var nextpage = parseInt(page + 1);
-				limit_start = parseInt(limit_start + limit_page_length);
+				limit_start = parseInt((page*limit_page_length) - limit_page_length);
 			
 			$this.parents('html').find('.list-paging-area .level-right button').html('Loading...')
 			
 			
-			get_data(job_id,idx,limit_start,limit_page_length,$this,'more',nextpage);
+			get_data(job_id,idx,limit_start,limit_page_length,$this,'more',page);
 		})
 	}	
 
-	function get_data(job_id,idx,limit_start,limit_page_length,$this,_status,nextpage){
+	function get_data(job_id,idx,limit_start,limit_page_length,$this,_status,page){
 		var _table = '<table class="table table-time-cycle table-bordered">'+
 						'<thead>'+
 							'<tr>'+
@@ -117,8 +127,9 @@ frappe.ui.form.on('Job Card', {
 					'</div>'+
 				'</div>'+
 				'<div class="level-right">'+
-					'<button class="btn btn-default btn-more btn-sm my-btn-more" data-nextpage="'+nextpage+'" data-idx="'+idx+'">'+
-						'More...'+
+					'Page:<input type="text" name="_page" class="form-control" style="width: 50px;" value="1"/> of &nbsp; <span class="total-page"> '+total_page+'</span>'+
+					'<button style="margin-left:10px;" class="btn btn-default btn-more btn-sm my-btn-more" data-nextpage="" data-idx="'+idx+'">'+
+						'Show'+
 					'</button>'+
 				'</div>'+
 			'</div>';		
@@ -131,6 +142,7 @@ frappe.ui.form.on('Job Card', {
 				
 				if(data.message.total_data){
 					total_row = data.message.total_data;
+					total_page =  Math.ceil(total_row / limit_page_length);
 					var no = 0;
 					$.each(data.message.doc,function(i, d){
 						no = parseInt(i + 1 + limit_start);
@@ -147,21 +159,27 @@ frappe.ui.form.on('Job Card', {
 					pagination_table = '';
 				}
 				
-				setTimeout(function(){
+				setTimeout(function(){					
+					$this.parents('html').find('.form-in-grid [data-fieldname="time_cycle"]')
+					.html(_table+data_table+end_table+pagination_table).find('input[name="_page"]').val(page)
 					if(_status == 'load'){
-						$this.parents('html').find('.form-in-grid [data-fieldname="time_cycle"]')
-						.html(_table+data_table+end_table+pagination_table)
 					} else {
-						$this.parents('html').find('.table-time-cycle tbody')
-						.append(data_table)
-						$this.parents('html').find('.list-paging-area .level-right button').html('More...')
+						// $this.parents('html').find('.table-time-cycle tbody')
+						// .append(data_table)
+						$this.parents('html').find('.list-paging-area .level-right button').html('Show')
 					}
 
 					if(data.message.total_data <= no){
 						$this.parents('html').find('.list-paging-area .level-right button').hide()
 					}
-					
+					// $this.parents('html').find('[data-fieldname="time_cycle"]')
+					// .find('input[name="_page"]').val(page)
 				},1000)
+
+				setTimeout(function(){
+					$this.parents('html').find('.form-in-grid [data-fieldname="time_cycle"]')
+					.find('span.total-page').text(total_page)					
+				}, 1500)
 			}
 
 		})
