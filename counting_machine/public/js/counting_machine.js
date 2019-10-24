@@ -3,9 +3,14 @@ var total_row = 0;
 var total_page = 1;
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
+		console.log(" fsafsaf "+frm.doc.job_started)
 		not_good(frm, cdt, cdn)
 		xxx++;
 		event_modal(frm, cdt, cdn, xxx)
+
+		if(frm.doc.job_started == 0){
+
+		}
 		
 	}
 });

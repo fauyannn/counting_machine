@@ -143,6 +143,7 @@ def set_actual(mesin_id,actual):
 		frappe.db.set_value("Job Card Time Log", job_card_time['name'], "actual", actual)
 		frappe.db.set_value("Job Card Time Log", job_card_time['name'], "completed_qty", completed_qty)
 		
+		# time cycle
 		doc = frappe.get_doc({
 			"doctype": "Counting Machine",
 			"idx": idx,
@@ -159,7 +160,8 @@ def set_actual(mesin_id,actual):
 			ignore_version=True # do not create a version record
 		)
 		frappe.db.commit()
-		# return cm
+		# end time cycle
+		
 		return {
 			'status' : job_started,
 			'employee_name' : '',
@@ -200,4 +202,21 @@ def get_time_cycle(job_id, time_log_id, limit_start, limit_page_length):
 		)
 	total_data = frappe.db.count(_doctype, filters = filters)
 	return {"doc":doc, "total_data":total_data}
-	return doc
+	
+	
+@frappe.whitelist()
+def set_total_time(job_id,mesin_id, total_time_hold, total_time_setup, total_time_stop):
+	
+	data = frappe.get_doc('Job Card', job_id)
+
+	data.total_setup_time_in_mins = total_time_setup
+	data.total_hold_time_in_mins = total_time_hold
+	data.total_stop_time_in_mins = total_time_stop
+
+	data.save(
+		ignore_permissions=True, # ignore write permissions during insert
+		ignore_version=True # do not create a version record
+	)
+	frappe.db.commit()
+
+	return {'status' : 1}
