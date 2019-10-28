@@ -3,7 +3,7 @@ var total_row = 0;
 var total_page = 1;
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
-		console.log(" fsafsaf "+frm.doc.job_started)
+		// console.log(" fsafsaf "+frm.doc.job_started)
 		not_good(frm, cdt, cdn)
 		xxx++;
 		event_modal(frm, cdt, cdn, xxx)
@@ -12,6 +12,13 @@ frappe.ui.form.on('Job Card', {
 
 		}
 		
+	},
+	before_submit:function(frm, cdt, cdn){
+		console.log("xxxxxxxxxx : " + frm)
+	},	
+	before_remove: function(listview) {
+		console.log(111111111)
+		msgprint("Before Remove Called!");		
 	}
 });
 
