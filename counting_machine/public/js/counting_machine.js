@@ -14,12 +14,41 @@ frappe.ui.form.on('Job Card', {
 		
 	},
 	before_submit:function(frm, cdt, cdn){
-		console.log("xxxxxxxxxx : " + frm)
+		// console.log("before_submit : " + cur_frm.doc)
+		// console.log(frm.doc)			
 	},	
 	before_remove: function(listview) {
-		console.log(111111111)
-		msgprint("Before Remove Called!");		
+		// console.log(111111111)
+		// msgprint("Before Remove Called!");		
+	},
+	on_submit:function(frm,cdt,cdn){
+		// console.log('on_submit : ' + cdn)
+		var not_good = 0
+		const datas = cur_frm.doc.time_logs
+		datas.forEach(function(d, k){
+			not_good += d.not_good
+		})
+
+		var args = {
+			job_card: cur_frm.doc.name,
+			workstation: cur_frm.doc.workstation,
+			operation: cur_frm.doc.operation,
+			quantity: not_good,
+			company: cur_frm.doc.company,
+			employee: cur_frm.doc.employee,
+		}
+		// console.log(args)
+		if(not_good > 0){
+			frappe.call({
+				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.insert_not_good",
+				args: args,
+				callback: function(r) {
+					frm.reload_doc();
+				}
+			});
+		}
 	}
+
 });
 
 

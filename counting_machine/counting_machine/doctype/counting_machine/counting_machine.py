@@ -222,3 +222,17 @@ def set_total_time(job_id,mesin_id, total_time_hold, total_time_setup, total_tim
 	frappe.db.commit()
 
 	return {'status' : 1}
+
+@frappe.whitelist()
+def insert_not_good(job_card,workstation,operation,quantity,company,employee):
+	doc = frappe.get_doc({
+        "doctype": "Not Good",
+        "job_card": job_card,
+		"workstation": workstation,
+		"operation": operation,
+		"quantity": quantity,
+		"company": company,
+		"employee": employee,
+		"posting_date":frappe.utils.nowdate()
+	}).insert()
+	return {'status' : 1}
