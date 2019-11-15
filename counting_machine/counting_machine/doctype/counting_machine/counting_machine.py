@@ -224,6 +224,34 @@ def set_total_time(job_id,mesin_id, total_time_hold, total_time_setup, total_tim
 	return {'status' : 1}
 
 @frappe.whitelist()
+def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, total_hold_qty, total_setup_qty, total_stop_qty,employee_performance,average_job_time_in_mins,average_time_setup_in_mins,average_time_hold_in_mins,average_time_stop_in_mins):
+	try:
+		data = frappe.get_doc('Job Card', job_id)
+
+		data.total_setup_time_in_mins = total_time_setup
+		data.total_hold_time_in_mins = total_time_hold
+		data.total_stop_time_in_mins = total_time_stop
+
+		data.total_hold_qty = total_hold_qty
+		data.total_setup_qty = total_setup_qty
+		data.total_stop_qty = total_stop_qty
+		data.employee_performance = employee_performance
+
+		data.average_job_time_in_mins = average_job_time_in_mins
+		data.average_time_setup_in_mins = average_time_setup_in_mins
+		data.average_time_hold_in_mins = average_time_hold_in_mins
+		data.average_time_stop_in_mins = average_time_stop_in_mins
+
+		data.save(
+			ignore_permissions=True, # ignore write permissions during insert
+			ignore_version=True # do not create a version record
+		)
+		frappe.db.commit()
+		return {'status' : 1}
+	except Exception as e:		
+		return {'status' : 0,'message':'error'}
+
+@frappe.whitelist()
 def insert_not_good(job_card,workstation,operation,quantity,company,employee):
 	doc = frappe.get_doc({
         "doctype": "Not Good",
