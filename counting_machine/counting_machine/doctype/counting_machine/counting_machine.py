@@ -92,7 +92,7 @@ def get_cm(rf_id='',mesin_id=''):
 		filters = {
 			"name": ["=",job_id],
 		}
-		job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','input','output','working_time_in_mins','estimate_time_per_item_in_secs'])
+		job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','input','output','planned_production_time_in_mins','ideal_cycle_time_in_secs'])
 
 		return {
 			'status' : job_card[0],
@@ -103,8 +103,8 @@ def get_cm(rf_id='',mesin_id=''):
 			'input' : job_card[2],
 			'output' : job_card[3],
 			'actual' : int(actual),
-			'working_time_in_mins' : int(job_card[4]),
-			'estimate_time_per_item_in_secs' : int(job_card[5])
+			'planned_production_time' : int(job_card[4]),
+			'ideal_cycle_time' : int(job_card[5])
 		}
 	else:
 		return {'status':'Job Card not available'}
