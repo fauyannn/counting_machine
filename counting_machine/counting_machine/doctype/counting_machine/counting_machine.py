@@ -231,7 +231,7 @@ def set_total_time(job_id,mesin_id, total_time_hold, total_time_setup, total_tim
 	return {'status' : 1}
 
 @frappe.whitelist()
-def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, total_hold_qty, total_setup_qty, total_stop_qty,employee_performance,average_job_time_in_mins,average_time_setup_in_mins,average_time_hold_in_mins,average_time_stop_in_mins):
+def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, total_hold_qty, total_setup_qty, total_stop_qty,employee_performance,average_job_time_in_mins,average_time_setup_in_mins,average_time_hold_in_mins,average_time_stop_in_mins,availability):
 	try:
 		data = frappe.get_doc('Job Card', job_id)
 
@@ -243,12 +243,13 @@ def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, 
 		data.total_setup_qty = total_setup_qty
 		data.total_stop_qty = total_stop_qty
 		data.employee_performance = employee_performance
+		data.availability = availability
 
 		data.average_job_time_in_mins = average_job_time_in_mins
 		data.average_time_setup_in_mins = average_time_setup_in_mins
 		data.average_time_hold_in_mins = average_time_hold_in_mins
 		data.average_time_stop_in_mins = average_time_stop_in_mins
-
+		
 		data.save(
 			ignore_permissions=True, # ignore write permissions during insert
 			ignore_version=True # do not create a version record
