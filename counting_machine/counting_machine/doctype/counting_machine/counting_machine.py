@@ -235,9 +235,9 @@ def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, 
 	try:
 		data = frappe.get_doc('Job Card', job_id)
 
-		data.total_setup_time_in_mins = total_time_setup
-		data.total_hold_time_in_mins = total_time_hold
-		data.total_stop_time_in_mins = total_time_stop
+		data.total_setup_time_in_mins = total_time_setup/60
+		data.total_hold_time_in_mins = total_time_hold/60
+		data.total_stop_time_in_mins = total_time_stop/60
 
 		data.total_hold_qty = total_hold_qty
 		data.total_setup_qty = total_setup_qty
@@ -245,10 +245,10 @@ def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, 
 		data.employee_performance = employee_performance
 		data.availability = availability
 
-		data.average_job_time_in_mins = average_job_time_in_mins
-		data.average_time_setup_in_mins = average_time_setup_in_mins
-		data.average_time_hold_in_mins = average_time_hold_in_mins
-		data.average_time_stop_in_mins = average_time_stop_in_mins
+		data.average_job_time_in_mins = average_job_time_in_mins/60
+		data.average_time_setup_in_mins = average_time_setup_in_mins/60
+		data.average_time_hold_in_mins = average_time_hold_in_mins/60
+		data.average_time_stop_in_mins = average_time_stop_in_mins/60
 		
 		data.save(
 			ignore_permissions=True, # ignore write permissions during insert
