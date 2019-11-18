@@ -28,6 +28,8 @@ def get_cm(rf_id='',mesin_id=''):
 
 	job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','name'])
 	
+	actual = 0
+
 	if job_card:
 		job_id = job_card[2]
 		data = frappe.get_doc('Job Card', job_id)
@@ -35,6 +37,7 @@ def get_cm(rf_id='',mesin_id=''):
 		_count = 0	
 		for dt in data.time_logs:
 			_count = dt.idx
+			actual += dt.actual
 		# return dt
 		_now = datetime.now()
 		_job_started = 1
@@ -89,7 +92,8 @@ def get_cm(rf_id='',mesin_id=''):
 		filters = {
 			"name": ["=",job_id],
 		}
-		job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','input','output'])
+		job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','input','output','working_time_in_mins','estimate_time_per_item_in_secs'])
+
 		return {
 			'status' : job_card[0],
 			'employee_name' : data_employee['employee_name'],
@@ -97,7 +101,10 @@ def get_cm(rf_id='',mesin_id=''):
 			'mesin_id' : mesin_id,
 			'job_id' : job_id,
 			'input' : job_card[2],
-			'output' : job_card[3]
+			'output' : job_card[3],
+			'actual' : int(actual),
+			'working_time_in_mins' : int(job_card[4]),
+			'estimate_time_per_item_in_secs' : int(job_card[5])
 		}
 	else:
 		return {'status':'Job Card not available'}
