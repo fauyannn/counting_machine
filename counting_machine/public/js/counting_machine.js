@@ -6,11 +6,11 @@ frappe.ui.form.on('Job Card', {
 		// console.log(" fsafsaf "+frm.doc.job_started)
 		not_good(frm, cdt, cdn)
 		xxx++;
-		event_modal(frm, cdt, cdn, xxx)
+		// event_modal(frm, cdt, cdn, xxx)
 
-		if(frm.doc.job_started == 0){
+		// if(frm.doc.job_started == 0){
 
-		}
+		// }
 		
 	},
 	before_submit:function(frm, cdt, cdn){
