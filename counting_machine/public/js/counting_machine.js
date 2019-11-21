@@ -55,11 +55,11 @@ frappe.ui.form.on('Job Card', {
 // frappe.ui.form.on('Job Card Time Log', {
 // 	not_good: function (frm, cdt, cdn) { 
 	function not_good(){
-		$(document).off('keyup','div[data-fieldname="time_logs"] input[data-fieldname="not_good"]');
-		$(document).on('keyup','div[data-fieldname="time_logs"] input[data-fieldname="not_good"]', function(frm, cdt, cdn){
+		$(document).off('keyup','div[data-fieldname="time_logs"] input[data-fieldname="not_good"], div[data-fieldname="time_logs"] input[data-fieldname="actual"]');
+		$(document).on('keyup','div[data-fieldname="time_logs"] input[data-fieldname="not_good"], div[data-fieldname="time_logs"] input[data-fieldname="actual"]', function(frm, cdt, cdn){
 			var $this = $(this);
 			var $parent = $this.closest('.grid-row');
-			var not_good = $this.val();
+			var not_good = $parent.find('input[data-fieldname="not_good"]').val();
 			var actual = $parent.find('input[data-fieldname="actual"]').val();
 			var idx = $parent.data('idx');
 			var row = idx-1;
