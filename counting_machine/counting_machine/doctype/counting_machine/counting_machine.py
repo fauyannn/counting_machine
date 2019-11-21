@@ -94,15 +94,17 @@ def get_cm(rf_id='',mesin_id=''):
 		}
 		job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','input','output','planned_production_time_in_mins','ideal_cycle_time_in_secs'])
 
+		target = int(job_card[1]) - actual
+
 		return {
 			'status' : job_card[0],
 			'employee_name' : data_employee['employee_name'],
-			'target' : int(job_card[1]),
+			'target' : target,
 			'mesin_id' : mesin_id,
 			'job_id' : job_id,
 			'input' : job_card[2],
 			'output' : job_card[3],
-			'actual' : int(actual),
+			'actual' : 0, 
 			'planned_production_time' : int(job_card[4]),
 			'ideal_cycle_time' : int(job_card[5])
 		}
