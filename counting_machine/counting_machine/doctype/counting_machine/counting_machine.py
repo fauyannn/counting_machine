@@ -26,8 +26,10 @@ def get_cm(rf_id='',mesin_id=''):
 		"docstatus":0
 		}
 
-	job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','name'])
+	# ['job_started','for_quantity','name']
+	job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','name'], as_dict=False, order_by='creation asc')
 	
+	# return job_card
 	actual = 0
 
 	if job_card:
