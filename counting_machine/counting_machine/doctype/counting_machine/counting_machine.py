@@ -249,24 +249,29 @@ def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, 
 		_count += 1
 		name_last_time_logs = dt.name
 		total_completed_qty += dt.actual
-	# return data.time_logs
+	
 	data.total_completed_qty = total_completed_qty
 
-	data.total_setup_time_in_mins = int(total_time_setup)/60
-	data.total_hold_time_in_mins = int(total_time_hold)/60
-	data.total_stop_time_in_mins = int(total_time_stop)/60
+	data.total_setup_time_in_mins = int(data.total_setup_time_in_mins) + (int(total_time_setup)/60)
+	data.total_hold_time_in_mins = int(data.total_hold_time_in_mins) + (int(total_time_hold)/60)
+	data.total_stop_time_in_mins = int(data.total_stop_time_in_mins) + (int(total_time_stop)/60)
 
-	data.total_hold_qty = total_hold_qty
-	data.total_setup_qty = total_setup_qty
-	data.total_stop_qty = total_stop_qty
+	data.total_hold_qty = int(data.total_hold_qty) + int(total_hold_qty)
+	data.total_setup_qty = int(data.total_setup_qty) + int(total_setup_qty)
+	data.total_stop_qty = int(data.total_setup_qty) + int(total_stop_qty)
 
-	data.employee_performance = int(employee_performance)/_count
-	data.availability = int(availability)/_count
+	pembagi = 1
+	if(_count > 1):
+		pembagi = 2
 
-	data.average_cycle_time_in_mins = (int(average_cycle_time_in_mins)/_count)/60
-	data.average_time_setup_in_mins = (int(average_time_setup_in_mins)/_count)/60
-	data.average_time_hold_in_mins = (int(average_time_hold_in_mins)/_count)/60
-	data.average_time_stop_in_mins = (int(average_time_stop_in_mins)/_count)/60
+		
+	data.employee_performance = (int(data.employee_performance) + int(employee_performance))/pembagi
+	data.availability = (int(data.availability) + int(availability))/pembagi
+	
+	data.average_cycle_time_in_mins = (int(data.average_cycle_time_in_mins) + (int(average_cycle_time_in_mins)/60)) / pembagi
+	data.average_time_setup_in_mins = (int(data.average_time_setup_in_mins) + (int(average_time_setup_in_mins)/60)) / pembagi
+	data.average_time_hold_in_mins = (int(data.average_time_hold_in_mins) + (int(average_time_hold_in_mins)/60)) / pembagi
+	data.average_time_stop_in_mins = (int(data.average_time_stop_in_mins) + (int(average_time_stop_in_mins)/60)) / pembagi
 
 	data.save(
 		ignore_permissions=True, # ignore write permissions during insert
@@ -277,8 +282,8 @@ def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, 
 
 	# Setting actual
 	frappe.db.set_value("Job Card Time Log", name_last_time_logs, "actual", actual)
-
 	return {'status' : 1}
+	# return {'status' : 1, 'pembagi':pembagi,'db_cycle':data.average_cycle_time_in_mins, 'cycle':(int(average_cycle_time_in_mins)/60),'hasil':((int(data.average_cycle_time_in_mins) + (int(average_cycle_time_in_mins)/60)) / pembagi)}
 	# except Exception as e:		
 	# 	return {'status' : 0,'message':'error'}
 
