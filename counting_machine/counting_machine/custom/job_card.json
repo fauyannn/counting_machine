@@ -600,7 +600,7 @@
    "in_list_view": 0,
    "in_standard_filter": 0,
    "insert_after": "average",
-   "label": "Average Job Time in Mins",
+   "label": "Average Cycle Time in Mins",
    "length": 0,
    "modified": "2019-10-31 15:06:34.199714",
    "modified_by": "Administrator",

@@ -233,17 +233,25 @@ def set_total_time(job_id,mesin_id, total_time_hold, total_time_setup, total_tim
 	return {'status' : 1}
 
 @frappe.whitelist()
-def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, total_hold_qty, total_setup_qty, total_stop_qty,employee_performance,average_job_time_in_mins,average_time_setup_in_mins,average_time_hold_in_mins,average_time_stop_in_mins,availability,actual):
+def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, total_hold_qty, total_setup_qty, total_stop_qty,employee_performance,average_cycle_time_in_mins,average_time_setup_in_mins,average_time_hold_in_mins,average_time_stop_in_mins,availability,actual):
 	
 	data = frappe.get_doc('Job Card', job_id)
-	
+	filters = {
+		"parent": ["=",job_id]
+		}
+	# job_card_time = frappe.db.count('Job Card Time Log', filters)
+	# return job_card_time
+
 	name_last_time_logs = ''
 	total_completed_qty = 0
+	_count = 0
 	for dt in data.time_logs:
+		_count += 1
 		name_last_time_logs = dt.name
 		total_completed_qty += dt.actual
-	
+	# return data.time_logs
 	data.total_completed_qty = total_completed_qty
+
 	data.total_setup_time_in_mins = int(total_time_setup)/60
 	data.total_hold_time_in_mins = int(total_time_hold)/60
 	data.total_stop_time_in_mins = int(total_time_stop)/60
@@ -251,13 +259,14 @@ def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, 
 	data.total_hold_qty = total_hold_qty
 	data.total_setup_qty = total_setup_qty
 	data.total_stop_qty = total_stop_qty
-	data.employee_performance = employee_performance
-	data.availability = availability
 
-	data.average_job_time_in_mins = int(average_job_time_in_mins)/60
-	data.average_time_setup_in_mins = int(average_time_setup_in_mins)/60
-	data.average_time_hold_in_mins = int(average_time_hold_in_mins)/60
-	data.average_time_stop_in_mins = int(average_time_stop_in_mins)/60
+	data.employee_performance = int(employee_performance)/_count
+	data.availability = int(availability)/_count
+
+	data.average_cycle_time_in_mins = (int(average_cycle_time_in_mins)/_count)/60
+	data.average_time_setup_in_mins = (int(average_time_setup_in_mins)/_count)/60
+	data.average_time_hold_in_mins = (int(average_time_hold_in_mins)/_count)/60
+	data.average_time_stop_in_mins = (int(average_time_stop_in_mins)/_count)/60
 
 	data.save(
 		ignore_permissions=True, # ignore write permissions during insert
