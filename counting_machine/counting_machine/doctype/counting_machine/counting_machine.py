@@ -306,7 +306,14 @@ def insert_not_good(job_card,workstation,operation,quantity,company,employee):
 	return {'status' : 1}
 
 @frappe.whitelist()
-def sendToQC(job_id,status):
-	frappe.db.set_value("Job Card", job_id, "status", status)
-	return {'status' : 1}
+def sendToQC(job_id):
+	frappe.db.set_value("Job Card", job_id, "status", 'Send to QC')
+	frappe.db.commit()
+	return {'status' : 1,'job_id':job_id,'status':'Send to QC'}
+
+@frappe.whitelist()
+def sendToWIP(job_id):
+	frappe.db.set_value("Job Card", job_id, "status", 'Work In Progress')
+	frappe.db.commit()
+	return {'status' : 1,'job_id':job_id,'status':'Work In Progress'}
 
