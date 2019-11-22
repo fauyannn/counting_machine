@@ -1,14 +1,28 @@
 var xxx = 0;
 var total_row = 0;
 var total_page = 1;
+var _status = ''
 frappe.ui.form.on('Job Card', {
+
+	after_save: function(frm) {
+		console.log(_status)
+		console.log("after_save : "+ frm.doc.status)
+		frappe.call({
+			method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToQC",
+			args: {job_id:frm.doc.name,status:_status},
+			callback: function(r) {
+				frm.reload_doc();
+			}
+		});
+	},
 	refresh: function (frm, cdt, cdn) {
+		_status = frm.doc.status
 		// frm.disable_submit();
 		// if(frm.doc.status != 'Send to QC' && frm.doc.docstatus == 0){
 		cur_frm.page.add_action_item(__("Send to QC"), function() {
 			frappe.call({
 				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToQC",
-				args: {job_id:frm.doc.name},
+				args: {job_id:frm.doc.name,status:'Send to QC'},
 				callback: function(r) {
 					frm.reload_doc();
 				}
@@ -19,7 +33,7 @@ frappe.ui.form.on('Job Card', {
 		cur_frm.page.add_action_item(__("Work In Progress"), function() {
 			frappe.call({
 				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToWIP",
-				args: {job_id:frm.doc.name},
+				args: {job_id:frm.doc.name,status:'Work In Progress'},
 				callback: function(r) {
 					frm.reload_doc();
 				}
