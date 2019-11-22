@@ -23,9 +23,10 @@ def get_cm(rf_id='',mesin_id=''):
 	filters = {
 		"workstation": ["=",mesin_id],
 		"employee": ["=",employee_id],
-		"docstatus":0
+		"docstatus":0,
+		"status":["!=",'Send to QC']
 		}
-
+	
 	# ['job_started','for_quantity','name']
 	job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','name'], as_dict=False, order_by='creation asc')
 	
@@ -84,6 +85,7 @@ def get_cm(rf_id='',mesin_id=''):
 			# data.total_completed_qty = 10
 			data.append("time_logs", newtime)
 			
+		data.status = 'Send to QC'
 		data.save(
 			ignore_permissions=True, # ignore write permissions during insert
 			ignore_version=True # do not create a version record
@@ -302,3 +304,9 @@ def insert_not_good(job_card,workstation,operation,quantity,company,employee):
 		"posting_date":frappe.utils.nowdate()
 	}).insert()
 	return {'status' : 1}
+
+@frappe.whitelist()
+def sendToQC(job_id,status):
+	frappe.db.set_value("Job Card", job_id, "status", status)
+	return {'status' : 1}
+

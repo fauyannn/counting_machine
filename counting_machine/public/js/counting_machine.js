@@ -3,15 +3,58 @@ var total_row = 0;
 var total_page = 1;
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
-		// console.log(" fsafsaf "+frm.doc.job_started)
+		// frm.disable_submit();
+		if(frm.doc.status != 'Send to QC' && frm.doc.docstatus == 0){
+			cur_frm.page.add_action_item(__("Send to QC"), function() {
+				frappe.call({
+					method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToQC",
+					args: {job_id:cdn, status:'Send to QC'},
+					callback: function(r) {
+						frm.reload_doc();
+						// cur_frm.set_value("status", 'Send to QC');
+						// cur_frm.save() 
+					}
+				});
+
+				// cur_frm.set_value("status", 'Send to QC');
+				// cur_frm.set_value("availability", 1);
+				// cur_frm.save() 
+				// console.log(1212)
+			});
+		}
+		if(frm.doc.status == 'Send to QC' && frm.doc.docstatus == 0){
+			cur_frm.page.add_action_item(__("Work In Progress"), function() {
+				frappe.call({
+					method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToQC",
+					args: {job_id:cdn, status:'Work In Progress'},
+					callback: function(r) {
+						frm.reload_doc();
+						// cur_frm.set_value("status", 'Work In Progress');
+						// cur_frm.save() 
+					}
+				});
+			});
+		}
+
+		// if(frm.doc.status != 'Send to QC'){
+		// 	$('[data-label="Submit"]').parent().css('display','none');
+		// } else {
+		// 	$('[data-label="Submit"]').parent().css('display','');
+		// }
+		if(frm.doc.docstatus === 1){
+			$('[data-label="Send to QC"]').parents('.actions-btn-group').css('display','none');
+		} else {
+			$('[data-label="Send to QC"]').parents('.actions-btn-group').css('display','');
+		}
+			
+		console.log(frm.doc)
+		var color = {'Completed':'green','Work In Progress':'yellow','Send to QC':'blue'}
+		cur_frm.page.set_indicator(frm.doc.status,color[frm.doc.status])
 		not_good(frm, cdt, cdn)
 		xxx++;
 		// event_modal(frm, cdt, cdn, xxx)
 
-		// if(frm.doc.job_started == 0){
-
-		// }
-		
+			
 	},
 	before_submit:function(frm, cdt, cdn){
 		// console.log("before_submit : " + cur_frm.doc)
