@@ -5,8 +5,6 @@ var _status = ''
 frappe.ui.form.on('Job Card', {
 
 	after_save: function(frm) {
-		console.log(_status)
-		console.log("after_save : "+ frm.doc.status)
 		frappe.call({
 			method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToQC",
 			args: {job_id:frm.doc.name,status:_status},
@@ -44,12 +42,22 @@ frappe.ui.form.on('Job Card', {
 		if(frm.doc.status == 'Send to QC'){
 			$('[data-label="Send to QC"]').closest('li.user-action').css('display','none');
 			$('[data-label="Work In Progress"]').closest('li.user-action').css('display','');
-		} else if(frm.doc.status == 'Work In Progress'){
+		} else {
+			$('[data-label="Submit"]').parent().css('display','');
+		} 
+		
+		if(frm.doc.status == 'Work In Progress'){
 			$('[data-label="Work In Progress"]').closest('li.user-action').css('display','none');
 			$('[data-label="Send to QC"]').closest('li.user-action').css('display','');
 		} else {
 			$('[data-label="Submit"]').parent().css('display','');
 		}
+
+		if(frm.doc.status != 'Work In Progress' && frm.doc.status != 'Send to QC'){
+			$('[data-label="Work In Progress"]').closest('li.user-action').css('display','none');
+			$('[data-label="Send to QC"]').closest('li.user-action').css('display','');
+		}
+		
 		if(frm.doc.docstatus === 1){
 			$('[data-label="Send to QC"]').parents('.actions-btn-group').css('display','none');
 		} else {
