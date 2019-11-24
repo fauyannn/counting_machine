@@ -292,7 +292,9 @@ def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, 
 	# 	return {'status' : 0,'message':'error'}
 
 @frappe.whitelist()
-def insert_not_good(job_card,workstation,operation,quantity,company,employee):
+def insert_not_good(job_card,workstation,operation,quantity,company,employee,work_order):
+	data_wo = frappe.get_doc('Work Order', work_order)
+	# return data_wo
 	doc = frappe.get_doc({
         "doctype": "Not Good",
         "job_card": job_card,
@@ -301,6 +303,9 @@ def insert_not_good(job_card,workstation,operation,quantity,company,employee):
 		"quantity": quantity,
 		"company": company,
 		"employee": employee,
+		"work_order":work_order,
+		"item_code":data_wo.production_item,
+		"item_name":data_wo.item_name,
 		"posting_date":frappe.utils.nowdate()
 	}).insert()
 	return {'status' : 1}

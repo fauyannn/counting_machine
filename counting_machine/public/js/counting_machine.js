@@ -98,6 +98,7 @@ frappe.ui.form.on('Job Card', {
 			quantity: not_good,
 			company: cur_frm.doc.company,
 			employee: cur_frm.doc.employee,
+			work_order: cur_frm.doc.work_order,
 		}
 		// console.log(args)
 		if(not_good > 0){
