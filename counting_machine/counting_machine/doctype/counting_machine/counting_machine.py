@@ -243,39 +243,48 @@ def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, 
 	filters = {
 		"parent": ["=",job_id]
 		}
+	# return data
 	# job_card_time = frappe.db.count('Job Card Time Log', filters)
 	# return job_card_time
 
 	name_last_time_logs = ''
 	total_completed_qty = 0
+	total_employee_performance = 0
+	total_availability = 0
+	total_average_cycle_time_in_mins = 0
+	total_average_time_setup_in_mins = 0
+	total_average_time_hold_in_mins = 0
+	total_average_time_stop_in_mins = 0
 	_count = 0
 	for dt in data.time_logs:
 		_count += 1
 		name_last_time_logs = dt.name
 		total_completed_qty += dt.actual
-	
+		total_employee_performance += int(dt.employee_performance)
+		total_availability += int(dt.availability)
+		
+		total_average_cycle_time_in_mins += float(dt.average_cycle_time_in_mins)
+		total_average_time_setup_in_mins += float(dt.average_time_setup_in_mins)
+		total_average_time_hold_in_mins += float(dt.average_time_hold_in_mins)
+		total_average_time_stop_in_mins += float(dt.average_time_stop_in_mins)
+	# return {'a':total_average_cycle_time_in_mins,'b':total_completed_qty}
 	data.total_completed_qty = total_completed_qty
 
-	data.total_setup_time_in_mins = int(data.total_setup_time_in_mins) + (int(total_time_setup)/60)
-	data.total_hold_time_in_mins = int(data.total_hold_time_in_mins) + (int(total_time_hold)/60)
-	data.total_stop_time_in_mins = int(data.total_stop_time_in_mins) + (int(total_time_stop)/60)
+	data.total_setup_time_in_mins = float(data.total_setup_time_in_mins) + (float(total_time_setup)/60)
+	data.total_hold_time_in_mins = float(data.total_hold_time_in_mins) + (float(total_time_hold)/60)
+	data.total_stop_time_in_mins = float(data.total_stop_time_in_mins) + (float(total_time_stop)/60)
 
 	data.total_hold_qty = int(data.total_hold_qty) + int(total_hold_qty)
 	data.total_setup_qty = int(data.total_setup_qty) + int(total_setup_qty)
 	data.total_stop_qty = int(data.total_setup_qty) + int(total_stop_qty)
 
-	pembagi = 1
-	if(_count > 1):
-		pembagi = 2
-
-		
-	data.employee_performance = (int(data.employee_performance) + int(employee_performance))/pembagi
-	data.availability = (int(data.availability) + int(availability))/pembagi
+	data.employee_performance = (int(total_employee_performance) + int(employee_performance))/_count
+	data.availability = (int(total_availability) + int(availability))/_count
 	
-	data.average_cycle_time_in_mins = (int(data.average_cycle_time_in_mins) + (int(average_cycle_time_in_mins)/60)) / pembagi
-	data.average_time_setup_in_mins = (int(data.average_time_setup_in_mins) + (int(average_time_setup_in_mins)/60)) / pembagi
-	data.average_time_hold_in_mins = (int(data.average_time_hold_in_mins) + (int(average_time_hold_in_mins)/60)) / pembagi
-	data.average_time_stop_in_mins = (int(data.average_time_stop_in_mins) + (int(average_time_stop_in_mins)/60)) / pembagi
+	data.average_cycle_time_in_mins = (float(total_average_cycle_time_in_mins) + (float(average_cycle_time_in_mins)/60)) / _count
+	data.average_time_setup_in_mins = (float(total_average_time_setup_in_mins) + (float(average_time_setup_in_mins)/60)) / _count
+	data.average_time_hold_in_mins = (float(total_average_time_hold_in_mins) + (float(average_time_hold_in_mins)/60)) / _count
+	data.average_time_stop_in_mins = (float(total_average_time_stop_in_mins) + (float(average_time_stop_in_mins)/60)) / _count
 
 	data.save(
 		ignore_permissions=True, # ignore write permissions during insert
@@ -285,8 +294,15 @@ def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, 
 	frappe.db.commit()
 
 	# Setting actual
+	frappe.db.set_value("Job Card Time Log", name_last_time_logs, "employee_performance", int(employee_performance))
+	frappe.db.set_value("Job Card Time Log", name_last_time_logs, "availability", int(availability))
+	frappe.db.set_value("Job Card Time Log", name_last_time_logs, "average_cycle_time_in_mins", (float(average_cycle_time_in_mins)/60))
+	frappe.db.set_value("Job Card Time Log", name_last_time_logs, "average_time_hold_in_mins", (float(average_time_hold_in_mins)/60))
+	frappe.db.set_value("Job Card Time Log", name_last_time_logs, "average_time_stop_in_mins", (float(average_time_stop_in_mins)/60))
+	frappe.db.set_value("Job Card Time Log", name_last_time_logs, "average_time_setup_in_mins", (float(average_time_setup_in_mins)/60))
+
 	frappe.db.set_value("Job Card Time Log", name_last_time_logs, "actual", actual)
-	return {'status' : 1}
+	return {'status' : 1,'_count':_count,'tact':total_average_cycle_time_in_mins,'act':(float(average_cycle_time_in_mins)/60)}
 	# return {'status' : 1, 'pembagi':pembagi,'db_cycle':data.average_cycle_time_in_mins, 'cycle':(int(average_cycle_time_in_mins)/60),'hasil':((int(data.average_cycle_time_in_mins) + (int(average_cycle_time_in_mins)/60)) / pembagi)}
 	# except Exception as e:		
 	# 	return {'status' : 0,'message':'error'}
