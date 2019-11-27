@@ -164,7 +164,7 @@ frappe.ui.form.on('Job Card', {
 		var job_id = cdn;
 		var limit_start = 0;
 		$(document).find('div[data-fieldname="time_logs"] a.btn-open-row span.octicon').off()
-		$(document).find('div[data-fieldname="time_logs"] a.btn-open-row span.octicon').on('click',function(){
+		$(document).find('div[data-fieldname="time_logs"] a.btn-open-row span.octicon').on('click', ':checkbox',function(){
 			limit_start = 0;
 			if(xxx){			
 				// console.log('after click : '+xxx);

@@ -260,8 +260,8 @@ def counting_report(job_id, total_time_hold, total_time_setup, total_time_stop, 
 		_count += 1
 		name_last_time_logs = dt.name
 		total_completed_qty += dt.actual
-		total_employee_performance += int(dt.employee_performance)
-		total_availability += int(dt.availability)
+		total_employee_performance += float(dt.employee_performance)
+		total_availability += float(dt.availability)
 		
 		total_average_cycle_time_in_mins += float(dt.average_cycle_time_in_mins)
 		total_average_time_setup_in_mins += float(dt.average_time_setup_in_mins)
