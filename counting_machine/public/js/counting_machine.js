@@ -2,6 +2,7 @@ var xxx = 0;
 var total_row = 0;
 var total_page = 1;
 var _status = ''
+  
 frappe.ui.form.on('Job Card', {
 
 	after_save: function(frm) {
@@ -122,8 +123,8 @@ frappe.ui.form.on('Job Card', {
 		$(document).on('keyup','div[data-fieldname="time_logs"] input[data-fieldname="not_good"], div[data-fieldname="time_logs"] input[data-fieldname="actual"]', function(frm, cdt, cdn){
 			var $this = $(this);
 			var $parent = $this.closest('.grid-row');
-			var not_good = $parent.find('input[data-fieldname="not_good"]').val();
-			var actual = $parent.find('input[data-fieldname="actual"]').val();
+			var not_good = ($parent.find('input[data-fieldname="not_good"]').val()).replace('.','').replace('.','').replace('.','');
+			var actual = ($parent.find('input[data-fieldname="actual"]').val()).replace('.','').replace('.','').replace('.','');
 			var idx = $parent.data('idx');
 			var row = idx-1;
 		
@@ -142,7 +143,9 @@ frappe.ui.form.on('Job Card', {
 			var total_completed_qty = 0;
 			var completed_qty = 0;
 			$('div [data-fieldname="time_logs"]:first .rows .grid-row').each(function(index, data){	
-				total_completed_qty += parseInt($(data).find('[data-fieldname="completed_qty"]').text());
+				completed_qty = ($(data).find('[data-fieldname="completed_qty"]').text()).replace('.','').replace('.','').replace('.','');
+				console.log(completed_qty)
+				total_completed_qty += parseInt(completed_qty);
 			})
 			// console.log(total_completed_qty)
 			cur_frm.set_value('total_completed_qty', total_completed_qty)
