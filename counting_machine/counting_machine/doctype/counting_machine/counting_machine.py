@@ -340,12 +340,18 @@ def sendToWIP(job_id,status):
 
 
 @frappe.whitelist()
-def updateQtyWO(wo_id,job_id,qty):
+def updateQtyWO(wo_id,job_id,qty,status):
 	frappe.db.set_value("Work Order", wo_id, "qty", qty)
-	frappe.db.set_value("Job Card", job_id, "for_quantity", qty)
-	frappe.db.set_value("Job Card", '3da54fc70e', "status", 'Completed')
+	frappe.db.set_value("Work Order", wo_id, "status", status)
+	# frappe.db.set_value("Job Card", job_id, "for_quantity", qty)
+	# frappe.db.set_value("Job Card", '3da54fc70e', "status", 'Completed')
 	frappe.db.commit()
 	return {'status' : 1,'wo_id':wo_id,'qty':qty}
+
+@frappe.whitelist()
+def updateStatus(doctype,id,status):
+	frappe.db.set_value(doctype, id, "status", status)
+	return {'success':1,'status' : status,'id':id,'doctype':doctype}
 
 @frappe.whitelist()
 def insert_batch_no(batch_id,item):	
