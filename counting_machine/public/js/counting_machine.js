@@ -54,59 +54,60 @@ frappe.ui.form.on('Job Card', {
 		}		
 	},
 	refresh: function (frm, cdt, cdn) {
-		_status = frm.doc.status
+		// _status = frm.doc.status
+		console.log(frm.doc)
 		// frm.disable_submit();
 		// if(frm.doc.status != 'Send to QC' && frm.doc.docstatus == 0){
-		cur_frm.page.add_action_item(__("Send to QC"), function() {
-			frappe.call({
-				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToQC",
-				args: {job_id:frm.doc.name,status:'Send to QC'},
-				callback: function(r) {
-					frm.reload_doc();
-				}
-			});
-		});
+		// cur_frm.page.add_action_item(__("Send to QC"), function() {
+		// 	frappe.call({
+		// 		method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToQC",
+		// 		args: {job_id:frm.doc.name,status:'Send to QC'},
+		// 		callback: function(r) {
+		// 			frm.reload_doc();
+		// 		}
+		// 	});
+		// });
 		// }
 		// if(frm.doc.status == 'Send to QC' && frm.doc.docstatus == 0){
-		cur_frm.page.add_action_item(__("Work In Progress"), function() {
-			frappe.call({
-				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToWIP",
-				args: {job_id:frm.doc.name,status:'Work In Progress'},
-				callback: function(r) {
-					frm.reload_doc();
-				}
-			});
-		});
+		// cur_frm.page.add_action_item(__("Work In Progress"), function() {
+		// 	frappe.call({
+		// 		method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToWIP",
+		// 		args: {job_id:frm.doc.name,status:'Work In Progress'},
+		// 		callback: function(r) {
+		// 			frm.reload_doc();
+		// 		}
+		// 	});
+		// });
 		// }
 
-		if(frm.doc.status == 'Send to QC'){
-			$('[data-label="Send to QC"]').closest('li.user-action').css('display','none');
-			$('[data-label="Work In Progress"]').closest('li.user-action').css('display','');
-		} else {
-			$('[data-label="Submit"]').parent().css('display','');
-		} 
+		// if(frm.doc.status == 'Send to QC'){
+		// 	$('[data-label="Send to QC"]').closest('li.user-action').css('display','none');
+		// 	$('[data-label="Work In Progress"]').closest('li.user-action').css('display','');
+		// } else {
+		// 	$('[data-label="Submit"]').parent().css('display','');
+		// } 
 		
-		if(frm.doc.status == 'Work In Progress'){
-			$('[data-label="Work In Progress"]').closest('li.user-action').css('display','none');
-			$('[data-label="Send to QC"]').closest('li.user-action').css('display','');
-		} else {
-			$('[data-label="Submit"]').parent().css('display','');
-		}
+		// if(frm.doc.status == 'Work In Progress'){
+		// 	$('[data-label="Work In Progress"]').closest('li.user-action').css('display','none');
+		// 	$('[data-label="Send to QC"]').closest('li.user-action').css('display','');
+		// } else {
+		// 	$('[data-label="Submit"]').parent().css('display','');
+		// }
 
-		if(frm.doc.status != 'Work In Progress' && frm.doc.status != 'Send to QC'){
-			$('[data-label="Work In Progress"]').closest('li.user-action').css('display','none');
-			$('[data-label="Send to QC"]').closest('li.user-action').css('display','');
-		}
+		// if(frm.doc.status != 'Work In Progress' && frm.doc.status != 'Send to QC'){
+		// 	$('[data-label="Work In Progress"]').closest('li.user-action').css('display','none');
+		// 	$('[data-label="Send to QC"]').closest('li.user-action').css('display','');
+		// }
 		
-		if(frm.doc.docstatus === 1){
-			$('[data-label="Send to QC"]').parents('.actions-btn-group').css('display','none');
-		} else {
-			$('[data-label="Send to QC"]').parents('.actions-btn-group').css('display','');
-		}
+		// if(frm.doc.docstatus === 1){
+		// 	$('[data-label="Send to QC"]').parents('.actions-btn-group').css('display','none');
+		// } else {
+		// 	$('[data-label="Send to QC"]').parents('.actions-btn-group').css('display','');
+		// }
 			
 		
-		var color = {'Completed':'green','Work In Progress':'yellow','Send to QC':'blue'}
-		cur_frm.page.set_indicator(frm.doc.status,color[frm.doc.status])
+		// var color = {'Completed':'green','Work In Progress':'yellow','Send to QC':'blue'}
+		// cur_frm.page.set_indicator(frm.doc.status,color[frm.doc.status])
 		not_good(frm, cdt, cdn)
 		xxx++;
 		// event_modal(frm, cdt, cdn, xxx)

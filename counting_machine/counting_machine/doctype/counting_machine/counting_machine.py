@@ -24,7 +24,7 @@ def get_cm(rf_id='',mesin_id=''):
 		"workstation": ["=",mesin_id],
 		"employee": ["=",employee_id],
 		"docstatus":0,
-		"status":["!=",'Send to QC']
+		"workflow_state":["!=",'Send to QC']
 		}
 	
 	# ['job_started','for_quantity','name']
@@ -327,10 +327,13 @@ def insert_not_good(job_card,workstation,operation,quantity,company,employee,wor
 	return {'status' : 1}
 
 @frappe.whitelist()
-def sendToQC(job_id,status):
+def sendToQC(job_id,status,docstatus,workflow_state):
 	frappe.db.set_value("Job Card", job_id, "status", status)
+	frappe.db.set_value("Job Card", job_id, "docstatus", docstatus)
+	frappe.db.set_value("Job Card", job_id, "workflow_state", workflow_state)
+	
 	# frappe.db.commit()
-	return {'status' : 1,'job_id':job_id,'_status':status}
+	return {'status' : 1,'job_id':job_id,'_status':status,'docstatus':docstatus,'workflow_state':workflow_state}
 
 @frappe.whitelist()
 def sendToWIP(job_id,status):
