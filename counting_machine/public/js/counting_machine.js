@@ -42,17 +42,17 @@ var _status = ''
 
 frappe.ui.form.on('Job Card', {
 
-	after_save: function(frm) {
-		if(frm.doc.status != 'Completed') {
-			frappe.call({
-				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToQC",
-				args: {job_id:frm.doc.name,status:_status},
-				callback: function(r) {
-					frm.reload_doc();
-				}
-			});
-		}		
-	},
+	// after_save: function(frm) {
+	// 	if(frm.doc.status != 'Completed') {
+	// 		frappe.call({
+	// 			method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToQC",
+	// 			args: {job_id:frm.doc.name,status:_status},
+	// 			callback: function(r) {
+	// 				frm.reload_doc();
+	// 			}
+	// 		});
+	// 	}		
+	// },
 	refresh: function (frm, cdt, cdn) {
 		// _status = frm.doc.status
 		console.log(frm.doc)
