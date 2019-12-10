@@ -7,6 +7,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from datetime import datetime
+import array as arr
 
 class CountingMachine(Document):
 	pass
@@ -375,3 +376,11 @@ def insert_batch_no(batch_id,item):
 
 	return {'status' : 1,'batch_id':batch_id,'item':item}
 
+@frappe.whitelist()
+def get_bom_with_item(items):
+	items = items.split('-_-')
+	filters = {
+		"item": ["in",items]
+		}
+	childs = frappe.db.get_list("BOM",filters,['name','uom','quantity','item','item_name'])
+	return {'param' : items, 'data':childs}

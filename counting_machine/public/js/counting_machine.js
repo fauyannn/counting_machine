@@ -378,3 +378,95 @@ frappe.ui.form.on('Stock Entry', {
 
 	}
 })
+
+frappe.ui.form.on('BOM', {
+	refresh: function (frm, cdt, cdn) {
+		// console.log(frm.doc.items)
+		// console.log(frm.doc.items.length)
+		
+		var _table = "<table class='table table-time-cycle table-bordered'><thead><tr>"+
+			"<th>BOM No.</th>"+
+			"<th>Item Code</th>"+
+			"<th>Qty</th>"+
+			"<th>UOM</th>"+
+			"</tr></thead> <tbody>";
+
+		// var _table = '<div class="form-grid">'+
+		// 	'<div class="grid-heading-row">'+
+		// 		'<div class="grid-row">'+
+		// 			'<div class="data-row row">'+
+		// 				'<div class="col grid-static-col col-xs-3 " data-fieldname="bom_no" data-fieldtype="Link">'+
+		// 					'<div class="field-area" style="display: none;"></div>'+
+		// 					'<div class="static-area ellipsis">BOM No.</div>'+
+		// 				'</div>'+
+		// 				'<div class="col grid-static-col col-xs-4 " data-fieldname="item_code" data-fieldtype="Link">'+
+		// 					'<div class="field-area" style="display: none;"></div>'+
+		// 					'<div class="static-area ellipsis">Item Code</div>'+
+		// 				'</div>'+
+		// 				'<div class="col grid-static-col col-xs-3  text-right" data-fieldname="qty" data-fieldtype="Float">'+
+		// 					'<div class="field-area" style="display: none;"></div>'+
+		// 					'<div class="static-area ellipsis">Qty</div>'+
+		// 				'</div>'+
+		// 				'<div class="col grid-static-col col-xs-2 " data-fieldname="uom" data-fieldtype="Link" style="border-right:none;">'+
+		// 					'<div class="field-area" style="display: none;"></div>'+
+		// 					'<div class="static-area ellipsis">UOM</div>'+
+		// 				'</div>'+
+							
+		// 			'</div>'+
+		// 		'</div>'+
+		// 	'</div>';	
+		// _table += '<div class="grid-body">'+
+		// 			'<div class="rows">'+
+		// 				'<div class="grid-row" data-name="dcefba9323" data-idx="1">'+
+		// 					'<div class="data-row row">';	
+		var datas;
+		var data_items = 'bom-no';
+		$.each(frm.doc.items, function(k,v){
+			if(v.item_code){
+				data_items += '-_-'+v.item_code;
+			}			
+		})
+		console.log(data_items)
+		if(data_items.length){
+			frappe.call({
+				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_bom_with_item",
+				args: {
+					items:data_items
+				},
+				callback: function(res) {
+					datas = res.message.data
+					console.log(datas)
+					if(datas.length){
+						$.each(datas, function(k,v){
+							// _table += '<div class="col grid-static-col col-xs-3  bold" data-fieldname="bom_no" data-fieldtype="Link">'+											
+							// 					'<a class="grey" href="#Form/BOM/'+v.name+'" data-doctype="BOM" data-name="'+v.name+'">'+
+							// 					v.name
+							// 					'</a>'+
+							// 			'</div>';
+							// _table += '<div class="col grid-static-col col-xs-3  bold" data-fieldname="item_code" data-fieldtype="Link">'+											
+							// 					'<a class="grey" href="#Form/Item/'+v.item+'" data-doctype="Item" data-name="'+v.item_name+'">'+
+							// 					v.item+':'+ v.item_name
+							// 					'</a>'+
+							// 			'</div>';
+							_table += '<tr><td><a class="grey" href="#Form/BOM/'+v.name+'" data-doctype="BOM" data-name="'+v.name+'">'+v.name+'</a></td>'+
+							'<td><a class="grey" href="#Form/Item/'+v.item+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item+':'+ v.item_name+'</a></td>'+
+							'<td>'+v.quantity+'</td>'+
+							'<td>'+v.uom+'</td></tr>';
+						})						
+					}else {
+						_table += '<tr><td colspan="4" class="grid-empty text-center">No Data</td></tr>';
+					}
+					// frm.reload_doc();
+				}
+			});
+		}
+		
+		
+		setTimeout(function(){
+			_table += "</tbody></table>";
+			// _table += "</div></div></div></div></div>";
+			$('body').find('[data-fieldname="childs"]').html(_table)
+		},1000)
+		
+	}
+})
