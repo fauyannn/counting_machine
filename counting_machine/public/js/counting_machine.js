@@ -42,76 +42,10 @@ var _status = ''
 
 frappe.ui.form.on('Job Card', {
 
-	// after_save: function(frm) {
-	// 	if(frm.doc.status != 'Completed') {
-	// 		frappe.call({
-	// 			method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToQC",
-	// 			args: {job_id:frm.doc.name,status:_status},
-	// 			callback: function(r) {
-	// 				frm.reload_doc();
-	// 			}
-	// 		});
-	// 	}		
-	// },
 	refresh: function (frm, cdt, cdn) {
-		// _status = frm.doc.status
-		console.log(frm.doc)
-		// frm.disable_submit();
-		// if(frm.doc.status != 'Send to QC' && frm.doc.docstatus == 0){
-		// cur_frm.page.add_action_item(__("Send to QC"), function() {
-		// 	frappe.call({
-		// 		method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToQC",
-		// 		args: {job_id:frm.doc.name,status:'Send to QC'},
-		// 		callback: function(r) {
-		// 			frm.reload_doc();
-		// 		}
-		// 	});
-		// });
-		// }
-		// if(frm.doc.status == 'Send to QC' && frm.doc.docstatus == 0){
-		// cur_frm.page.add_action_item(__("Work In Progress"), function() {
-		// 	frappe.call({
-		// 		method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.sendToWIP",
-		// 		args: {job_id:frm.doc.name,status:'Work In Progress'},
-		// 		callback: function(r) {
-		// 			frm.reload_doc();
-		// 		}
-		// 	});
-		// });
-		// }
-
-		// if(frm.doc.status == 'Send to QC'){
-		// 	$('[data-label="Send to QC"]').closest('li.user-action').css('display','none');
-		// 	$('[data-label="Work In Progress"]').closest('li.user-action').css('display','');
-		// } else {
-		// 	$('[data-label="Submit"]').parent().css('display','');
-		// } 
-		
-		// if(frm.doc.status == 'Work In Progress'){
-		// 	$('[data-label="Work In Progress"]').closest('li.user-action').css('display','none');
-		// 	$('[data-label="Send to QC"]').closest('li.user-action').css('display','');
-		// } else {
-		// 	$('[data-label="Submit"]').parent().css('display','');
-		// }
-
-		// if(frm.doc.status != 'Work In Progress' && frm.doc.status != 'Send to QC'){
-		// 	$('[data-label="Work In Progress"]').closest('li.user-action').css('display','none');
-		// 	$('[data-label="Send to QC"]').closest('li.user-action').css('display','');
-		// }
-		
-		// if(frm.doc.docstatus === 1){
-		// 	$('[data-label="Send to QC"]').parents('.actions-btn-group').css('display','none');
-		// } else {
-		// 	$('[data-label="Send to QC"]').parents('.actions-btn-group').css('display','');
-		// }
-			
-		
-		// var color = {'Completed':'green','Work In Progress':'yellow','Send to QC':'blue'}
-		// cur_frm.page.set_indicator(frm.doc.status,color[frm.doc.status])
+		// _status = frm.doc.status		
 		not_good(frm, cdt, cdn)
 		xxx++;
-		// event_modal(frm, cdt, cdn, xxx)
-
 			
 	},
 	before_submit:function(frm, cdt, cdn){
@@ -368,9 +302,7 @@ frappe.ui.form.on('Stock Entry', {
 									frm.reload_doc();
 								}
 							});
-						});
-						// console.log(item)
-						
+						});						
 					})
 				}
 			}
@@ -380,10 +312,7 @@ frappe.ui.form.on('Stock Entry', {
 })
 
 frappe.ui.form.on('BOM', {
-	refresh: function (frm, cdt, cdn) {
-		// console.log(frm.doc.items)
-		// console.log(frm.doc.items.length)
-		
+	refresh: function (frm, cdt, cdn) {		
 		var _table = "<table class='table table-time-cycle table-bordered'><thead><tr>"+
 			"<th>BOM No.</th>"+
 			"<th>Item Code</th>"+
@@ -391,34 +320,6 @@ frappe.ui.form.on('BOM', {
 			"<th>UOM</th>"+
 			"</tr></thead> <tbody>";
 
-		// var _table = '<div class="form-grid">'+
-		// 	'<div class="grid-heading-row">'+
-		// 		'<div class="grid-row">'+
-		// 			'<div class="data-row row">'+
-		// 				'<div class="col grid-static-col col-xs-3 " data-fieldname="bom_no" data-fieldtype="Link">'+
-		// 					'<div class="field-area" style="display: none;"></div>'+
-		// 					'<div class="static-area ellipsis">BOM No.</div>'+
-		// 				'</div>'+
-		// 				'<div class="col grid-static-col col-xs-4 " data-fieldname="item_code" data-fieldtype="Link">'+
-		// 					'<div class="field-area" style="display: none;"></div>'+
-		// 					'<div class="static-area ellipsis">Item Code</div>'+
-		// 				'</div>'+
-		// 				'<div class="col grid-static-col col-xs-3  text-right" data-fieldname="qty" data-fieldtype="Float">'+
-		// 					'<div class="field-area" style="display: none;"></div>'+
-		// 					'<div class="static-area ellipsis">Qty</div>'+
-		// 				'</div>'+
-		// 				'<div class="col grid-static-col col-xs-2 " data-fieldname="uom" data-fieldtype="Link" style="border-right:none;">'+
-		// 					'<div class="field-area" style="display: none;"></div>'+
-		// 					'<div class="static-area ellipsis">UOM</div>'+
-		// 				'</div>'+
-							
-		// 			'</div>'+
-		// 		'</div>'+
-		// 	'</div>';	
-		// _table += '<div class="grid-body">'+
-		// 			'<div class="rows">'+
-		// 				'<div class="grid-row" data-name="dcefba9323" data-idx="1">'+
-		// 					'<div class="data-row row">';	
 		var datas;
 		var data_items = 'bom-no';
 		$.each(frm.doc.items, function(k,v){
@@ -438,16 +339,6 @@ frappe.ui.form.on('BOM', {
 					console.log(datas)
 					if(datas.length){
 						$.each(datas, function(k,v){
-							// _table += '<div class="col grid-static-col col-xs-3  bold" data-fieldname="bom_no" data-fieldtype="Link">'+											
-							// 					'<a class="grey" href="#Form/BOM/'+v.name+'" data-doctype="BOM" data-name="'+v.name+'">'+
-							// 					v.name
-							// 					'</a>'+
-							// 			'</div>';
-							// _table += '<div class="col grid-static-col col-xs-3  bold" data-fieldname="item_code" data-fieldtype="Link">'+											
-							// 					'<a class="grey" href="#Form/Item/'+v.item+'" data-doctype="Item" data-name="'+v.item_name+'">'+
-							// 					v.item+':'+ v.item_name
-							// 					'</a>'+
-							// 			'</div>';
 							_table += '<tr><td><a class="grey" href="#Form/BOM/'+v.name+'" data-doctype="BOM" data-name="'+v.name+'">'+v.name+'</a></td>'+
 							'<td><a class="grey" href="#Form/Item/'+v.item+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item+':'+ v.item_name+'</a></td>'+
 							'<td>'+v.quantity+'</td>'+
@@ -456,7 +347,6 @@ frappe.ui.form.on('BOM', {
 					}else {
 						_table += '<tr><td colspan="4" class="grid-empty text-center">No Data</td></tr>';
 					}
-					// frm.reload_doc();
 				}
 			});
 		}
@@ -464,7 +354,6 @@ frappe.ui.form.on('BOM', {
 		
 		setTimeout(function(){
 			_table += "</tbody></table>";
-			// _table += "</div></div></div></div></div>";
 			$('body').find('[data-fieldname="childs"]').html(_table)
 		},1000)
 		
