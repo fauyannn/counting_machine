@@ -311,51 +311,202 @@ frappe.ui.form.on('Stock Entry', {
 	}
 })
 
+
+var arr = [];
+var x =0;
+var _bom = [];
 frappe.ui.form.on('BOM', {
 	refresh: function (frm, cdt, cdn) {		
-		var _table = "<table class='table table-time-cycle table-bordered'><thead><tr>"+
-			"<th>BOM No.</th>"+
-			"<th>Item Code</th>"+
-			"<th>Qty</th>"+
-			"<th>UOM</th>"+
-			"</tr></thead> <tbody>";
-
-		var datas;
-		var data_items = 'bom-no';
-		$.each(frm.doc.items, function(k,v){
-			if(v.item_code){
-				data_items += '-_-'+v.item_code;
-			}			
-		})
-		console.log(data_items)
-		if(data_items.length){
-			frappe.call({
-				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_bom_with_item",
-				args: {
-					items:data_items
-				},
-				callback: function(res) {
-					datas = res.message.data
-					console.log(datas)
-					if(datas.length){
-						$.each(datas, function(k,v){
-							_table += '<tr><td><a class="grey" href="#Form/BOM/'+v.name+'" data-doctype="BOM" data-name="'+v.name+'">'+v.name+'</a></td>'+
-							'<td><a class="grey" href="#Form/Item/'+v.item+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item+':'+ v.item_name+'</a></td>'+
-							'<td>'+v.quantity+'</td>'+
-							'<td>'+v.uom+'</td></tr>';
-						})						
-					}else {
-						_table += '<tr><td colspan="4" class="grid-empty text-center">No Data</td></tr>';
-					}
-				}
-			});
-		}
+		var bom_no = frm.doc.name;
+		var tree_table = '<table class="tree">'+
+			'<tr><th>Item Code</th><th>BOM No.</th><th>Qty</th><th>UOM</th></tr>'+
+			'<tr class="treegrid-1">'+
+				'<td>Root node 1</td><td>Additional info</td>'+
+			'</tr>'+
+			'<tr class="treegrid-2 treegrid-parent-1">'+
+				'<td>Node 1-1</td><td>Additional info</td>'+
+			'</tr>'+
+			'<tr class="treegrid-3 treegrid-parent-1">'+
+				'<td>Node 1-2</td><td>Additional info</td>'+
+			'</tr>'+
+			'<tr class="treegrid-5">'+
+				'<td>Root node 2</td><td>Additional info</td>'+
+			'</tr>'+
+			'<tr class="treegrid-6 treegrid-parent-5">'+
+				'<td>Node 2-1</td><td>Additional info</td>'+
+			'</tr>';
+		var tree_table = '<table class="tree table-bom-child">'+
+			'<tr class="treegrid-0"><th>Item Code</th><th>BOM No.</th><th>Qty</th><th>UOM</th></tr>';
 		
+		// var data_items = 'bom-no';
+		// $.each(frm.doc.items, function(k,v){
+		// 	if(v.item_code){
+		// 		data_items += '-_-'+v.item_code;
+		// 	}			
+		// })
+		// console.log(data_items)
+		// if(data_items.length){
+			get_bom_tree(bom_no,false)			
+		// }
 		
+		tree_table += '</table>';
 		setTimeout(function(){
-			_table += "</tbody></table>";
-			$('body').find('[data-fieldname="childs"]').html(_table)
+			$('body').find('[data-fieldname="childs"]').html(tree_table)
 		},1000)
-		
 	}
+})
+
+function get_bom_tree(bom_no,$this){	
+	if(bom_no){
+		var _parent = $this ? $this.closest('td').data('bom') : '';
+		
+		frappe.call({
+			method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_bom_tree",
+			args: {
+				bom_no:bom_no
+			},
+			callback: function(res) {				
+				if($this){
+					build_table2(res, $this)
+				}else{
+					build_table(res, $this)
+				}	
+				setTimeout(function(){
+					var display = $(document).find('.tree-loading').css('display');
+					console.log(display)
+					if(display!='none'){
+						var _idx= $(document).find('.tree-loading').closest('tr').data('idx');
+						$(document).find('tr.treegrid-expanded[data-idx="'+(_idx-1)+'"]').find('span.treegrid-expander-expanded').click();
+					}
+					// $(document).find('.table-bom-child tr.parent-'+_id).find('span.treegrid-expander-expanded').click();
+				},1500)			
+			}
+		});
+	}	
+}
+
+function build_table(res, $this){
+	var i = 0;
+	var tree_data_table = '';
+	var datas = res.message
+	// console.log(datas)
+				
+	if(datas.length){				
+		$.each(datas, function(k,v){	
+			i++;
+			if(v.expandable) {
+				tree_data_table += '<tr class="treegrid-'+i+'" data-idx="'+i+'">'+
+					'<td data-bom="'+v.bom_no+'" data-id="treegrid-'+i+'"><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
+					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
+					'<td>'+v.stock_qty+'</td>'+
+					'<td>'+v.stock_uom+'</td>'+
+				'</tr>'+
+				'<tr class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+'" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>'
+				;
+				i = i+1;
+			} else {
+				tree_data_table += '<tr class="treegrid-'+i+'" data-idx="'+i+'">'+
+					'<td><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
+					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
+					'<td>'+v.stock_qty+'</td>'+
+					'<td>'+v.stock_uom+'</td>'+
+				'</tr>';
+			}
+			
+			// var _icon = '<i class="octicon octicon-primitive-dot node-leaf"></i>';
+			// if(v.expandable) {
+			// 	_icon = '<a data-bom="'+v.bom_no+'" class="bom-tr"><i class="fa fa-fw fa-folder node-parent"></i></a>';
+			// }			
+			// var _table = '<tr class="'+v.bom_no+'">'+
+			// '<td>'+_icon+' <a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
+			// '<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+					
+			// '<td>'+v.stock_qty+'</td>'+
+			// '<td>'+v.stock_uom+'</td></tr>';
+			// // console.log(_table)
+			
+		})						
+	} else {
+		// setTimeout(function(){
+		// 	_table += '<tr class="no_data"><td colspan="4" class="grid-empty text-center">No Data</td></tr>';
+		// },1500)
+	}
+
+	
+	setTimeout(function(){
+		$(document).find('.table-bom-child').append(tree_data_table)
+		$('.tree').treegrid({
+			'initialState': 'collapsed',
+			'saveState': true,
+		});
+	},1500)
+	// setTimeout(function(){
+		
+	// },1600)
+	
+}
+
+function build_table2(res, $this){
+	var i = $this.closest('tr').data('idx');
+	var tree_data_table = '';
+	var tree_data_table_child = '';
+	var datas = res.message
+	// console.log(datas)
+	
+	var _id = $this.closest('td').data('id');
+	if(datas.length){				
+		$.each(datas, function(k,v){	
+			i++;
+			if(v.expandable) {
+				tree_data_table += ''+
+					'<td data-bom="'+v.bom_no+'" data-id="treegrid-'+i+'"><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
+					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
+					'<td>'+v.stock_qty+'</td>'+
+					'<td>'+v.stock_uom+'</td>';
+				var cek = $(document).find('table.table-bom-child').find('[class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+'"]').length;
+				console.log(cek)
+				if(cek==0){
+					tree_data_table_child += '<tr class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+'" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>';
+				}
+				
+				i = i+1;
+			} else {
+				tree_data_table += ''+
+					'<td><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
+					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
+					'<td>'+v.stock_qty+'</td>'+
+					'<td>'+v.stock_uom+'</td>'+
+				'';
+			}	
+			
+		})						
+	} else {
+		// setTimeout(function(){
+		// 	_table += '<tr class="no_data"><td colspan="4" class="grid-empty text-center">No Data</td></tr>';
+		// },1500)
+	}
+
+	
+	setTimeout(function(){
+		// var _id = $this.closest('td').data('id');
+		// var bom = $this.closest('tr').data('bom');
+		$(document).find('.table-bom-child tr.parent-'+_id).html(tree_data_table)
+		$(document).find('.table-bom-child tr.parent-'+_id).after(tree_data_table_child)
+		$('.tree').treegrid({
+			'initialState': 'collapsed',
+			'saveState': true,
+		});
+	},1500)
+	
+}
+
+$(document).ready(function(){
+	var _table = '<tr class="no_data"><td colspan="4" class="grid-empty text-center">Loading...</td></tr>';
+	$(document).off('click','.treegrid-expander-expanded');
+	$(document).on('click','.treegrid-expander-expanded',function(){
+		var $this = $(this)
+		var bom_no = $this.closest('td').data('bom');	
+		// $this.closest('tr').after(_table)	
+		get_bom_tree(bom_no,$this)
+		// console.log(bom_no)
+	})
 })

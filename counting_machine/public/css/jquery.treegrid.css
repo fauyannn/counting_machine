@@ -1,0 +1,30 @@
+table.tree{
+  width:100%;
+  border-collapse:collapse;
+}
+
+table.tree th, table.tree td {
+  text-align:left;
+  padding:5px 10px;
+  border-bottom:1px solid #e5e5e5;
+}
+
+table.tree dt {
+  color:#444;
+  font-weight:700;
+}
+
+table.tree th {
+  color:#444;
+}
+
+table.tree img {
+  max-width:100%;
+}
+
+.treegrid-indent {width:16px; height: 16px; display: inline-block; position: relative;}
+
+.treegrid-expander {width:16px; height: 16px; display: inline-block; position: relative; cursor: pointer;}
+
+.treegrid-expander-expanded{background-image: url(../counting_machine/img/collapse.png); }
+.treegrid-expander-collapsed{background-image: url(../counting_machine/img/expand.png);}

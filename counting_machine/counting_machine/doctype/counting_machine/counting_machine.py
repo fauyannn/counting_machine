@@ -384,3 +384,67 @@ def get_bom_with_item(items):
 		}
 	childs = frappe.db.get_list("BOM",filters,['name','uom','quantity','item','item_name'])
 	return {'param' : items, 'data':childs}
+
+@frappe.whitelist()
+def get_bom_tree(bom_no):
+	bom_doc = frappe.get_doc("BOM", bom_no)
+
+	bom_items = frappe.get_all('BOM Item',
+			fields=['item_code', 'bom_no', 'stock_qty'],
+			filters=[['parent', '=', bom_no]],
+			order_by='idx')
+
+	item_names = tuple(d.get('item_code') for d in bom_items)
+	items = frappe.get_list('Item',
+			fields=['image', 'description', 'name', 'stock_uom', 'item_name'],
+			filters=[['name', 'in', item_names]]) # to get only required item dicts
+
+	for bom_item in bom_items:
+		# extend bom_item dict with respective item dict
+		bom_item.update(
+			# returns an item dict from items list which matches with item_code
+			next(item for item in items if item.get('name')
+				== bom_item.get('item_code'))
+		)
+
+		bom_item.parent_bom_qty = bom_doc.quantity
+		bom_item.expandable = 0 if bom_item.bom_no in ('', None)  else 1
+
+	return bom_items
+	# return get_children('BOM',bom_no)
+
+def get_children(doctype, parent=None, is_root=False, **filters):
+	if not parent or parent=="BOM":
+		frappe.msgprint(_('Please select a BOM'))
+		return
+
+	if parent:
+		frappe.form_dict.parent = parent
+
+	if frappe.form_dict.parent:
+		bom_doc = frappe.get_doc("BOM", frappe.form_dict.parent)
+		frappe.has_permission("BOM", doc=bom_doc, throw=True)
+
+		bom_items = frappe.get_all('BOM Item',
+			fields=['item_code', 'bom_no as value', 'stock_qty'],
+			filters=[['parent', '=', frappe.form_dict.parent]],
+			order_by='idx')
+
+		item_names = tuple(d.get('item_code') for d in bom_items)
+
+		items = frappe.get_list('Item',
+			fields=['image', 'description', 'name', 'stock_uom', 'item_name'],
+			filters=[['name', 'in', item_names]]) # to get only required item dicts
+
+		for bom_item in bom_items:
+			# extend bom_item dict with respective item dict
+			bom_item.update(
+				# returns an item dict from items list which matches with item_code
+				next(item for item in items if item.get('name')
+					== bom_item.get('item_code'))
+			)
+
+			bom_item.parent_bom_qty = bom_doc.quantity
+			bom_item.expandable = 0 if bom_item.value in ('', None)  else 1
+
+		return bom_items
