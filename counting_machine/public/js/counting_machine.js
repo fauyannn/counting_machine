@@ -355,33 +355,53 @@ frappe.ui.form.on('BOM', {
 		},1000)
 	}
 })
-
+var req = false;
 function get_bom_tree(bom_no,$this){	
 	if(bom_no){
 		var _parent = $this ? $this.closest('td').data('bom') : '';
-		
-		frappe.call({
-			method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_bom_tree",
-			args: {
-				bom_no:bom_no
-			},
-			callback: function(res) {				
-				if($this){
-					build_table2(res, $this)
-				}else{
-					build_table(res, $this)
-				}	
-				setTimeout(function(){
-					var display = $(document).find('.tree-loading').css('display');
-					console.log(display)
-					if(display!='none'){
-						var _idx= $(document).find('.tree-loading').closest('tr').data('idx');
-						$(document).find('tr.treegrid-expanded[data-idx="'+(_idx-1)+'"]').find('span.treegrid-expander-expanded').click();
-					}
-					// $(document).find('.table-bom-child tr.parent-'+_id).find('span.treegrid-expander-expanded').click();
-				},1500)			
-			}
-		});
+		var datas = [];
+		// console.log('req1 : '+req)
+		if(req == false){
+			req = frappe.call({
+				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_bom_tree",
+				args: {
+					bom_no:bom_no
+				},
+				callback: function(res) {	
+					req = false;
+					// datas = res.message
+					// console.log(datas.length)
+					// if(datas.length){
+					// 	$.each(datas, function(v,k){
+					// 		datas[x]['parent'] = _parent;
+					// 		console.log('parent : '+_parent)
+					// 		x++;
+					// 	})
+					// }			
+					if($this){	
+						$this.closest('tr').attr('data-click','1')
+						build_table2(res, $this)
+					}else{
+						build_table(res, $this)
+					}	
+					setTimeout(function(){
+						// console.log(datas)
+						// var display = $(document).find('.tree-loading').css('display');
+						// console.log(display)
+						// if(display!='none'){
+						$('table.table-bom-child tr.tr-loading').each(function(k,v){
+							// console.log(v)
+							var _idx= $(v).closest('tr').data('idx');
+							// console.log(_idx)
+							$(document).find('tr.treegrid-expanded[data-idx="'+(_idx-1)+'"]').find('span.treegrid-expander-expanded').click();
+							$(this).hide();
+						})
+						// $(document).find('.table-bom-child tr.parent-'+_id).find('span.treegrid-expander-expanded').click();
+					},1600)			
+				}
+			});
+		}
+		// console.log('req2 : '+req)
 	}	
 }
 
@@ -395,17 +415,17 @@ function build_table(res, $this){
 		$.each(datas, function(k,v){	
 			i++;
 			if(v.expandable) {
-				tree_data_table += '<tr class="treegrid-'+i+'" data-idx="'+i+'">'+
+				tree_data_table += '<tr class="treegrid-'+i+'" data-idx="'+i+'" data-click="0">'+
 					'<td data-bom="'+v.bom_no+'" data-id="treegrid-'+i+'"><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
 					'<td>'+v.stock_uom+'</td>'+
 				'</tr>'+
-				'<tr class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+'" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>'
+				'<tr class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+' tr-loading" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>'
 				;
 				i = i+1;
 			} else {
-				tree_data_table += '<tr class="treegrid-'+i+'" data-idx="'+i+'">'+
+				tree_data_table += '<tr class="treegrid-'+i+'" data-idx="'+i+'" data-click="0">'+
 					'<td><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
@@ -439,9 +459,6 @@ function build_table(res, $this){
 			'saveState': true,
 		});
 	},1500)
-	// setTimeout(function(){
-		
-	// },1600)
 	
 }
 
@@ -453,29 +470,33 @@ function build_table2(res, $this){
 	// console.log(datas)
 	
 	var _id = $this.closest('td').data('id');
+	var _idx = $this.closest('tr').data('idx');
+	
 	if(datas.length){				
 		$.each(datas, function(k,v){	
 			i++;
+			// console.log('i :'+i)
 			if(v.expandable) {
-				tree_data_table += ''+
+				tree_data_table += '<tr class="treegrid-'+i+' parent-treegrid-'+_idx+'" data-parent="parent-treegrid-'+_idx+'" data-idx="'+i+'" data-click="0">'+
 					'<td data-bom="'+v.bom_no+'" data-id="treegrid-'+i+'"><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
-					'<td>'+v.stock_uom+'</td>';
+					'<td>'+v.stock_uom+'</td></tr>'+
+				'</tr>';
 				var cek = $(document).find('table.table-bom-child').find('[class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+'"]').length;
-				console.log(cek)
+				// console.log('cek : '+cek)
 				if(cek==0){
-					tree_data_table_child += '<tr class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+'" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>';
+					tree_data_table_child += '<tr class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+' tr-loading" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>';
 				}
 				
 				i = i+1;
 			} else {
-				tree_data_table += ''+
+				tree_data_table += '<tr class="treegrid-'+i+' parent-treegrid-'+_idx+'" data-parent="parent-treegrid-'+_idx+'" data-idx="'+i+'" data-click="0">'+
 					'<td><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
 					'<td>'+v.stock_uom+'</td>'+
-				'';
+				'</tr>';
 			}	
 			
 		})						
@@ -485,28 +506,62 @@ function build_table2(res, $this){
 		// },1500)
 	}
 
-	
+	// console.log('tr.parent-'+_id);
 	setTimeout(function(){
 		// var _id = $this.closest('td').data('id');
 		// var bom = $this.closest('tr').data('bom');
-		$(document).find('.table-bom-child tr.parent-'+_id).html(tree_data_table)
-		$(document).find('.table-bom-child tr.parent-'+_id).after(tree_data_table_child)
+
+		// console.log('xx '+_id)
+		$(document).find('.table-bom-child tr[data-idx="'+_idx+'"]').after(tree_data_table)
+		$(document).find('.table-bom-child tr.parent-treegrid-'+_idx+':first').after(tree_data_table_child)
+		$(document).find('.table-bom-child tr.parent-treegrid-'+_idx+'.tr-loading').remove()
+
+		var a = 0
+		$('table.table-bom-child tr').each(function(k,v){
+			var idx = $(v).data('idx');
+			var _parent = $(v).data('parent');
+			$(v).removeClass('treegrid-'+idx)
+			$(v).removeClass('treegrid-'+a)
+			$(v).removeClass(_parent)
+			var _class = $(v).attr('class');
+			$(v).removeClass(_class)
+			console.log(_class)
+			$(v).addClass('treegrid-'+a)
+			$(v).addClass(_parent)
+			$(v).find('td:first').data('id',a)
+			$(v).attr('data-idx',a)
+			$(v).addClass(_class)
+			// console.log(v)
+			a++
+		})
+
 		$('.tree').treegrid({
 			'initialState': 'collapsed',
 			'saveState': true,
 		});
 	},1500)
+	// setTimeout(function(){
+	// 	$('.tree').treegrid({
+	// 		'initialState': 'collapsed',
+	// 		'saveState': true,
+	// 	});
+	// },1510)
 	
 }
 
 $(document).ready(function(){
-	var _table = '<tr class="no_data"><td colspan="4" class="grid-empty text-center">Loading...</td></tr>';
+	// var _table = '<tr class="no_data"><td colspan="4" class="grid-empty text-center">Loading...</td></tr>';
 	$(document).off('click','.treegrid-expander-expanded');
 	$(document).on('click','.treegrid-expander-expanded',function(){
 		var $this = $(this)
 		var bom_no = $this.closest('td').data('bom');	
-		// $this.closest('tr').after(_table)	
-		get_bom_tree(bom_no,$this)
+		var _click = $this.closest('tr').attr('data-click');
+		// $this.closest('tr').after(_table)
+		// console.log('_click '+_click)
+		if(_click == 0){
+			get_bom_tree(bom_no,$this)
+		}
+		
 		// console.log(bom_no)
 	})
 })
