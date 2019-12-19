@@ -477,21 +477,21 @@ function build_table2(res, $this){
 			i++;
 			// console.log('i :'+i)
 			if(v.expandable) {
-				tree_data_table += '<tr class="treegrid-'+i+' parent-treegrid-'+_idx+'" data-parent="parent-treegrid-'+_idx+'" data-idx="'+i+'" data-click="0">'+
+				tree_data_table += '<tr class="treegrid-'+i+' hidden parent-treegrid-'+_idx+'" data-parent="parent-treegrid-'+_idx+'" data-idx="'+i+'" data-click="0">'+
 					'<td data-bom="'+v.bom_no+'" data-id="treegrid-'+i+'"><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
 					'<td>'+v.stock_uom+'</td></tr>'+
 				'</tr>';
 				var cek = $(document).find('table.table-bom-child').find('[class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+'"]').length;
-				// console.log('cek : '+cek)
+				console.log('cek : '+cek+' : '+i)
 				if(cek==0){
-					tree_data_table_child += '<tr class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+' tr-loading" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>';
+					tree_data_table += '<tr class="treegrid-'+parseInt(i+1)+' hidden parent-treegrid-'+i+' tr-loading" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>';
 				}
 				
 				i = i+1;
 			} else {
-				tree_data_table += '<tr class="treegrid-'+i+' parent-treegrid-'+_idx+'" data-parent="parent-treegrid-'+_idx+'" data-idx="'+i+'" data-click="0">'+
+				tree_data_table += '<tr class="treegrid-'+i+' hidden parent-treegrid-'+_idx+'" data-parent="parent-treegrid-'+_idx+'" data-idx="'+i+'" data-click="0">'+
 					'<td><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
@@ -499,7 +499,11 @@ function build_table2(res, $this){
 				'</tr>';
 			}	
 			
-		})						
+		})	
+		$(document).find('.table-bom-child tr[data-idx="'+_idx+'"]').after(tree_data_table)
+		// $(document).find('.table-bom-child tr.parent-treegrid-'+_idx+':first').after(tree_data_table_child)
+		
+					
 	} else {
 		// setTimeout(function(){
 		// 	_table += '<tr class="no_data"><td colspan="4" class="grid-empty text-center">No Data</td></tr>';
@@ -511,11 +515,8 @@ function build_table2(res, $this){
 		// var _id = $this.closest('td').data('id');
 		// var bom = $this.closest('tr').data('bom');
 
-		// console.log('xx '+_id)
-		$(document).find('.table-bom-child tr[data-idx="'+_idx+'"]').after(tree_data_table)
-		$(document).find('.table-bom-child tr.parent-treegrid-'+_idx+':first').after(tree_data_table_child)
+		// console.log('xx '+_id)		
 		$(document).find('.table-bom-child tr.parent-treegrid-'+_idx+'.tr-loading').remove()
-
 		var a = 0
 		$('table.table-bom-child tr').each(function(k,v){
 			var idx = $(v).data('idx');
@@ -525,12 +526,13 @@ function build_table2(res, $this){
 			$(v).removeClass(_parent)
 			var _class = $(v).attr('class');
 			$(v).removeClass(_class)
-			console.log(_class)
+			// console.log(_class)
 			$(v).addClass('treegrid-'+a)
 			$(v).addClass(_parent)
 			$(v).find('td:first').data('id',a)
 			$(v).attr('data-idx',a)
 			$(v).addClass(_class)
+			$(v).removeClass('hidden');
 			// console.log(v)
 			a++
 		})
