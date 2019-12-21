@@ -41,19 +41,15 @@ var _status = ''
 // })
 
 frappe.ui.form.on('Job Card', {
-
 	refresh: function (frm, cdt, cdn) {
 		// _status = frm.doc.status		
 		not_good(frm, cdt, cdn)
-		xxx++;
-			
+		xxx++;			
 	},
 	before_submit:function(frm, cdt, cdn){
-		// console.log("before_submit : " + cur_frm.doc)
-		// console.log(frm.doc)			
+			
 	},	
 	before_remove: function(listview) {
-		// console.log(111111111)
 		// msgprint("Before Remove Called!");		
 	},
 	on_submit:function(frm,cdt,cdn){
@@ -86,7 +82,6 @@ frappe.ui.form.on('Job Card', {
 	}
 
 });
-
 
 // frappe.ui.form.on('Job Card Time Log', {
 // 	not_good: function (frm, cdt, cdn) { 
@@ -178,13 +173,11 @@ frappe.ui.form.on('Job Card', {
 			var nextpage = parseInt(page + 1);
 				limit_start = parseInt((page*limit_page_length) - limit_page_length);
 			
-			$this.parents('html').find('.list-paging-area .level-right button').html('Loading...')
-			
+			$this.parents('html').find('.list-paging-area .level-right button').html('Loading...')			
 			
 			get_data(job_id,idx,limit_start,limit_page_length,$this,'more',page);
 		});
 	}	
-
 	function get_data(job_id,idx,limit_start,limit_page_length,$this,_status,page){
 		var _table = '<table class="table table-time-cycle table-bordered">'+
 						'<thead>'+
@@ -268,7 +261,6 @@ frappe.ui.form.on('Job Card', {
 		})
 	}
 
-
 frappe.ui.form.on('Stock Entry', {
 	refresh: function (frm, cdt, cdn) {
 		var data = frm.doc;
@@ -311,40 +303,28 @@ frappe.ui.form.on('Stock Entry', {
 	}
 })
 
-
 var arr = [];
 var x =0;
 var _bom = [];
+var req = false;
+var data_table = [];
+var datas = [];
+var data_active = [];
+var count_click = 0;
 frappe.ui.form.on('BOM', {
 	refresh: function (frm, cdt, cdn) {		
 		var bom_no = frm.doc.name;
-		var tree_table = '<table class="tree">'+
-			'<tr><th>Item Code</th><th>BOM No.</th><th>Qty</th><th>UOM</th></tr>'+
-			'<tr class="treegrid-1">'+
-				'<td>Root node 1</td><td>Additional info</td>'+
-			'</tr>'+
-			'<tr class="treegrid-2 treegrid-parent-1">'+
-				'<td>Node 1-1</td><td>Additional info</td>'+
-			'</tr>'+
-			'<tr class="treegrid-3 treegrid-parent-1">'+
-				'<td>Node 1-2</td><td>Additional info</td>'+
-			'</tr>'+
-			'<tr class="treegrid-5">'+
-				'<td>Root node 2</td><td>Additional info</td>'+
-			'</tr>'+
-			'<tr class="treegrid-6 treegrid-parent-5">'+
-				'<td>Node 2-1</td><td>Additional info</td>'+
-			'</tr>';
+		 arr = [];
+		 x =0;
+		 _bom = [];
+		 req = false;
+		 data_table = [];
+		 data_active = [];
+		 datas = [];
+		 count_click = 0;
 		var tree_table = '<table class="tree table-bom-child">'+
 			'<tr class="treegrid-0"><th>Item Code</th><th>BOM No.</th><th>Qty</th><th>UOM</th></tr>';
-		
-		// var data_items = 'bom-no';
-		// $.each(frm.doc.items, function(k,v){
-		// 	if(v.item_code){
-		// 		data_items += '-_-'+v.item_code;
-		// 	}			
-		// })
-		// console.log(data_items)
+				
 		// if(data_items.length){
 			get_bom_tree(bom_no,false)			
 		// }
@@ -355,12 +335,16 @@ frappe.ui.form.on('BOM', {
 		},1000)
 	}
 })
-var req = false;
+
 function get_bom_tree(bom_no,$this){	
 	if(bom_no){
-		var _parent = $this ? $this.closest('td').data('bom') : '';
-		var datas = [];
-		// console.log('req1 : '+req)
+		var _parent = $this ? $this.closest('tr').data('bom') : '';
+		var _sort = 0;
+		if($this){
+			data_active[count_click] = bom_no;
+			count_click++
+		}
+		// console.log('_parent : '+_parent)
 		if(req == false){
 			req = frappe.call({
 				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_bom_tree",
@@ -369,63 +353,77 @@ function get_bom_tree(bom_no,$this){
 				},
 				callback: function(res) {	
 					req = false;
-					// datas = res.message
-					// console.log(datas.length)
-					// if(datas.length){
-					// 	$.each(datas, function(v,k){
-					// 		datas[x]['parent'] = _parent;
-					// 		console.log('parent : '+_parent)
-					// 		x++;
-					// 	})
-					// }			
-					if($this){	
-						$this.closest('tr').attr('data-click','1')
-						build_table2(res, $this)
-					}else{
-						build_table(res, $this)
-					}	
-					setTimeout(function(){
-						// console.log(datas)
-						// var display = $(document).find('.tree-loading').css('display');
-						// console.log(display)
-						// if(display!='none'){
-						$('table.table-bom-child tr.tr-loading').each(function(k,v){
-							// console.log(v)
-							var _idx= $(v).closest('tr').data('idx');
-							// console.log(_idx)
-							$(document).find('tr.treegrid-expanded[data-idx="'+(_idx-1)+'"]').find('span.treegrid-expander-expanded').click();
-							$(this).hide();
+					datas = res.message
+					if(datas.length){
+						$.each(datas, function(k,v){
+							if($this){								
+								_sort = $this.closest('tr').data('sort')
+								data_table[x] = v;
+								data_table[x]._sort = _sort+''+x+'_';
+								data_table[x].childof = _sort;
+							} else {
+								data_table[x] = v;
+								data_table[x]._sort = x+'_';
+								data_table[x].childof = '';
+							}
+							x++;
 						})
-						// $(document).find('.table-bom-child tr.parent-'+_id).find('span.treegrid-expander-expanded').click();
-					},1600)			
+						// console.log(data_table)
+						setTimeout(function(){
+							buildtable(data_table)
+						},500)
+					}			
+//---------------------------------------------------------
+						
+					// setTimeout(function(){
+					// 	// console.log(datas)
+					// 	// var display = $(document).find('.tree-loading').css('display');
+					// 	// console.log(display)
+					// 	// if(display!='none'){
+					// 	// $('body').find('table.table-bom-child tr.tr-loading').each(function(k,v){
+					// 	// 	// console.log(v)
+					// 	// 	var _idx= $(v).closest('tr').data('idx');
+					// 	// 	// console.log(_idx)
+					// 	// 	$(v).parent().find('tr.treegrid-expanded[data-idx="'+(_idx-1)+'"]').find('span.treegrid-expander-expanded').click();
+					// 	// 	$(v).hide(); 
+					// 	// })
+					// 	// $(document).find('.table-bom-child tr.parent-'+_id).find('span.treegrid-expander-expanded').click();
+					// },1700)			
 				}
 			});
 		}
-		// console.log('req2 : '+req)
 	}	
 }
-
-function build_table(res, $this){
+function buildtable(data_table){
 	var i = 0;
-	var tree_data_table = '';
-	var datas = res.message
-	// console.log(datas)
-				
+	var _sort = 0;
+	var tree_data_table = '<table class="tree table-bom-child">'+
+		'<tr class="treegrid-0"><th>Item Code</th><th>BOM No.</th><th>Qty</th><th>UOM</th></tr>';
+	var datas = data_table.sort(dynamicSort("_sort"));
+	var parentid = 0;
+	var datachild = [];
+	var _click = 0;
 	if(datas.length){				
 		$.each(datas, function(k,v){	
+			_sort = v._sort
 			i++;
+			datachild[_sort] = i;
+			parentid = v.childof !='' ? 'parent-treegrid-'+datachild[v.childof] : '';
+			// console.log('xx '+v.bom_no);
+			_click = data_active[v.bom_no];
 			if(v.expandable) {
-				tree_data_table += '<tr class="treegrid-'+i+'" data-idx="'+i+'" data-click="0">'+
-					'<td data-bom="'+v.bom_no+'" data-id="treegrid-'+i+'"><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
+				tree_data_table += '<tr class="treegrid-'+i+' '+parentid+'" data-idx="'+i+'" data-click="'+_click+'" data-sort="'+_sort+'" data-bom="'+v.bom_no+'">'+
+					'<td data-bom="'+v.bom_no+'"><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
 					'<td>'+v.stock_uom+'</td>'+
-				'</tr>'+
-				'<tr class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+' tr-loading" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>'
-				;
+				'</tr>';
+				if(v.bom_no != '' && _click != 1){
+					tree_data_table += '<tr class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+' tr-loading" data-parent="'+i+'" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>';
+				}
 				i = i+1;
 			} else {
-				tree_data_table += '<tr class="treegrid-'+i+'" data-idx="'+i+'" data-click="0">'+
+				tree_data_table += '<tr class="treegrid-'+i+' '+parentid+'" data-idx="'+i+'" data-sort="'+_sort+'">'+
 					'<td><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
@@ -433,137 +431,56 @@ function build_table(res, $this){
 				'</tr>';
 			}
 			
-			// var _icon = '<i class="octicon octicon-primitive-dot node-leaf"></i>';
-			// if(v.expandable) {
-			// 	_icon = '<a data-bom="'+v.bom_no+'" class="bom-tr"><i class="fa fa-fw fa-folder node-parent"></i></a>';
-			// }			
-			// var _table = '<tr class="'+v.bom_no+'">'+
-			// '<td>'+_icon+' <a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
-			// '<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+					
-			// '<td>'+v.stock_qty+'</td>'+
-			// '<td>'+v.stock_uom+'</td></tr>';
-			// // console.log(_table)
-			
 		})						
 	} else {
 		// setTimeout(function(){
 		// 	_table += '<tr class="no_data"><td colspan="4" class="grid-empty text-center">No Data</td></tr>';
 		// },1500)
 	}
-
-	
 	setTimeout(function(){
-		$(document).find('.table-bom-child').append(tree_data_table)
+		$(document).find('.table-bom-child').html(tree_data_table)
 		$('.tree').treegrid({
 			'initialState': 'collapsed',
-			'saveState': true,
+			// 'saveState': true,
 		});
-	},1500)
-	
-}
 
-function build_table2(res, $this){
-	var i = $this.closest('tr').data('idx');
-	var tree_data_table = '';
-	var tree_data_table_child = '';
-	var datas = res.message
-	// console.log(datas)
-	
-	var _id = $this.closest('td').data('id');
-	var _idx = $this.closest('tr').data('idx');
-	
-	if(datas.length){				
-		$.each(datas, function(k,v){	
-			i++;
-			// console.log('i :'+i)
-			if(v.expandable) {
-				tree_data_table += '<tr class="treegrid-'+i+' hidden parent-treegrid-'+_idx+'" data-parent="parent-treegrid-'+_idx+'" data-idx="'+i+'" data-click="0">'+
-					'<td data-bom="'+v.bom_no+'" data-id="treegrid-'+i+'"><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
-					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
-					'<td>'+v.stock_qty+'</td>'+
-					'<td>'+v.stock_uom+'</td></tr>'+
-				'</tr>';
-				var cek = $(document).find('table.table-bom-child').find('[class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+'"]').length;
-				console.log('cek : '+cek+' : '+i)
-				if(cek==0){
-					tree_data_table += '<tr class="treegrid-'+parseInt(i+1)+' hidden parent-treegrid-'+i+' tr-loading" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>';
-				}
-				
-				i = i+1;
-			} else {
-				tree_data_table += '<tr class="treegrid-'+i+' hidden parent-treegrid-'+_idx+'" data-parent="parent-treegrid-'+_idx+'" data-idx="'+i+'" data-click="0">'+
-					'<td><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
-					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
-					'<td>'+v.stock_qty+'</td>'+
-					'<td>'+v.stock_uom+'</td>'+
-				'</tr>';
-			}	
-			
-		})	
-		$(document).find('.table-bom-child tr[data-idx="'+_idx+'"]').after(tree_data_table)
-		// $(document).find('.table-bom-child tr.parent-treegrid-'+_idx+':first').after(tree_data_table_child)
-		
-					
-	} else {
-		// setTimeout(function(){
-		// 	_table += '<tr class="no_data"><td colspan="4" class="grid-empty text-center">No Data</td></tr>';
-		// },1500)
-	}
-
-	// console.log('tr.parent-'+_id);
-	setTimeout(function(){
-		// var _id = $this.closest('td').data('id');
-		// var bom = $this.closest('tr').data('bom');
-
-		// console.log('xx '+_id)		
-		$(document).find('.table-bom-child tr.parent-treegrid-'+_idx+'.tr-loading').remove()
-		var a = 0
-		$('table.table-bom-child tr').each(function(k,v){
-			var idx = $(v).data('idx');
-			var _parent = $(v).data('parent');
-			$(v).removeClass('treegrid-'+idx)
-			$(v).removeClass('treegrid-'+a)
-			$(v).removeClass(_parent)
-			var _class = $(v).attr('class');
-			$(v).removeClass(_class)
-			// console.log(_class)
-			$(v).addClass('treegrid-'+a)
-			$(v).addClass(_parent)
-			$(v).find('td:first').data('id',a)
-			$(v).attr('data-idx',a)
-			$(v).addClass(_class)
-			$(v).removeClass('hidden');
+		// console.log(data_active)
+		$.each(data_active, function(k,v){
 			// console.log(v)
-			a++
-		})
+			$('body').find('table.table-bom-child tr[data-bom="'+v+'"]').attr('data-click',1);
+			var xid = $('body').find('table.table-bom-child tr[data-bom="'+v+'"]').data('idx');
+			$('body').find('table.table-bom-child tr.tr-loading[data-parent="'+xid+'"]').remove()
+			$('body').find('table.table-bom-child tr[data-bom="'+v+'"]').find('span').click();
 
-		$('.tree').treegrid({
-			'initialState': 'collapsed',
-			'saveState': true,
-		});
+		})
 	},1500)
-	// setTimeout(function(){
-	// 	$('.tree').treegrid({
-	// 		'initialState': 'collapsed',
-	// 		'saveState': true,
-	// 	});
-	// },1510)
-	
+		
 }
 
-$(document).ready(function(){
-	// var _table = '<tr class="no_data"><td colspan="4" class="grid-empty text-center">Loading...</td></tr>';
+$(document).ready(function(){	
 	$(document).off('click','.treegrid-expander-expanded');
 	$(document).on('click','.treegrid-expander-expanded',function(){
 		var $this = $(this)
-		var bom_no = $this.closest('td').data('bom');	
+		var bom_no = $this.closest('tr').data('bom');	
 		var _click = $this.closest('tr').attr('data-click');
-		// $this.closest('tr').after(_table)
-		// console.log('_click '+_click)
-		if(_click == 0){
+		if(_click == 0 || _click == 'undefined'){
 			get_bom_tree(bom_no,$this)
-		}
-		
-		// console.log(bom_no)
+		}		
 	})
 })
+function dynamicSort(property) {
+    var sortOrder = 1;
+
+    if(property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+    }
+
+    return function (a,b) {
+        if(sortOrder == -1){
+            return b[property].localeCompare(a[property]);
+        }else{
+            return a[property].localeCompare(b[property]);
+        }        
+    }
+}
