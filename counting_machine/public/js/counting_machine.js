@@ -413,7 +413,7 @@ function buildtable(data_table){
 			_click = data_active[v.bom_no];
 			if(v.expandable) {
 				tree_data_table += '<tr class="treegrid-'+i+' '+parentid+'" data-idx="'+i+'" data-click="'+_click+'" data-sort="'+_sort+'" data-bom="'+v.bom_no+'">'+
-					'<td data-bom="'+v.bom_no+'"><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
+					'<td data-bom="'+v.bom_no+'"><div class="left"><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+'<div class="treegrid-small">'+ v.item_name+'</div></a></div></td>'+
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
 					'<td>'+v.stock_uom+'</td>'+
@@ -424,7 +424,7 @@ function buildtable(data_table){
 				i = i+1;
 			} else {
 				tree_data_table += '<tr class="treegrid-'+i+' '+parentid+'" data-idx="'+i+'" data-sort="'+_sort+'">'+
-					'<td><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+':'+ v.item_name+'</a></td>'+
+					'<td><div class="left"><a class="grey" href="#Form/Item/'+v.item_code+'" data-doctype="Item" data-name="'+v.item_name+'">'+v.item_code+'<div class="treegrid-small">'+ v.item_name+'</div></a></div></td>'+
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
 					'<td>'+v.stock_uom+'</td>'+

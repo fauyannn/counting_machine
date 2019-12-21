@@ -21,10 +21,11 @@ table.tree th {
 table.tree img {
   max-width:100%;
 }
+.left {float: left;}
+.treegrid-small{font-size: 70%; margin-top: -3px;}
+.treegrid-indent {width:16px; height: 16px; display: inline-block; position: relative; float: left;}
 
-.treegrid-indent {width:16px; height: 16px; display: inline-block; position: relative;}
-
-.treegrid-expander {width:16px; height: 16px; display: inline-block; position: relative; cursor: pointer;}
+.treegrid-expander {width:16px; height: 16px; display: inline-block; position: relative; cursor: pointer; float: left;}
 
 .treegrid-expander-expanded{background-image: url(../counting_machine/img/collapse.png); }
 .treegrid-expander-collapsed{background-image: url(../counting_machine/img/expand.png);}
