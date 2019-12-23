@@ -3,46 +3,64 @@ var total_row = 0;
 var total_page = 1;
 var _status = ''
 
-// frappe.ui.form.on('Work Order', {
-// 	refresh: function (frm, cdt, cdn) {
-// 		// console.log(frm.doc)
-// 		var qty = parseInt(frm.doc.qty);
-// 		var mtfm = parseInt(frm.doc.material_transferred_for_manufacturing);
-// 		var produced_qty = parseInt(frm.doc.produced_qty);
-// 		console.log('qty : '+qty)
-// 		console.log('mtfm : '+mtfm)
-// 		console.log('produced_qty : '+produced_qty)
-// 		if(produced_qty>0){
-// 			var completed_btn = frm.add_custom_button(__('Completed'), function() {
-// 				frappe.confirm(
-// 					__('Completed permanent Work Order <b>{0}</b>?', [frm.doc.name]),
-// 					function(){						
-// 						console.log('Thanks for continue here!')
-// 						frappe.call({
-// 							method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.updateStatus",
-// 							args: {
-// 								doctype:'Work Order',
-// 								id:frm.doc.name,
-// 								status:'Completed'
-// 							},
-// 							callback: function(r) {
-// 								frm.reload_doc();
-// 							}
-// 						});
-// 					},
-// 					function(){
-// 						console.log('Close!')
-// 					}
-// 				)
-// 			});
-// 			completed_btn.addClass('btn-success');
-// 		}
-// 	}
-// })
+frappe.ui.form.on('Work Order', {
+	refresh: function (frm, cdt, cdn) {
+		console.log(frm.doc)
+		// var qty = parseInt(frm.doc.qty);
+		// var mtfm = parseInt(frm.doc.material_transferred_for_manufacturing);
+		// var produced_qty = parseInt(frm.doc.produced_qty);
+		// console.log('qty : '+qty)
+		// console.log('mtfm : '+mtfm)
+		// console.log('produced_qty : '+produced_qty)
+		// if(produced_qty>0){
+		// 	var completed_btn = frm.add_custom_button(__('Completed'), function() {
+		// 		frappe.confirm(
+		// 			__('Completed permanent Work Order <b>{0}</b>?', [frm.doc.name]),
+		// 			function(){						
+		// 				console.log('Thanks for continue here!')
+		// 				frappe.call({
+		// 					method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.updateStatus",
+		// 					args: {
+		// 						doctype:'Work Order',
+		// 						id:frm.doc.name,
+		// 						status:'Completed'
+		// 					},
+		// 					callback: function(r) {
+		// 						frm.reload_doc();
+		// 					}
+		// 				});
+		// 			},
+		// 			function(){
+		// 				console.log('Close!')
+		// 			}
+		// 		)
+		// 	});
+		// 	completed_btn.addClass('btn-success');
+		// }
+	}
+})
 
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
-		// _status = frm.doc.status		
+		// _status = frm.doc.status
+		// console.log(frm.doc)
+		if(frm.doc.bom_no != undefined && frm.doc.docstatus==0){
+			req = frappe.call({
+				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_time_cycle",
+				args: {
+					bom_no:frm.doc.bom_no,
+					operation:frm.doc.operation,
+					workstation:frm.doc.workstation
+				},
+				callback: function(res) {	
+					req = false;
+					datas = res.message
+					// console.log(datas)
+					$(document).find('input[data-fieldname="ideal_cycle_time_in_secs"]').val(datas.data);
+				}
+			});
+		}
+		// bom_no = 
 		not_good(frm, cdt, cdn)
 		xxx++;			
 	},
@@ -313,6 +331,7 @@ var data_active = [];
 var count_click = 0;
 frappe.ui.form.on('BOM', {
 	refresh: function (frm, cdt, cdn) {		
+		// console.log(frm.doc)
 		var bom_no = frm.doc.name;
 		 arr = [];
 		 x =0;
@@ -372,23 +391,7 @@ function get_bom_tree(bom_no,$this){
 						setTimeout(function(){
 							buildtable(data_table)
 						},500)
-					}			
-//---------------------------------------------------------
-						
-					// setTimeout(function(){
-					// 	// console.log(datas)
-					// 	// var display = $(document).find('.tree-loading').css('display');
-					// 	// console.log(display)
-					// 	// if(display!='none'){
-					// 	// $('body').find('table.table-bom-child tr.tr-loading').each(function(k,v){
-					// 	// 	// console.log(v)
-					// 	// 	var _idx= $(v).closest('tr').data('idx');
-					// 	// 	// console.log(_idx)
-					// 	// 	$(v).parent().find('tr.treegrid-expanded[data-idx="'+(_idx-1)+'"]').find('span.treegrid-expander-expanded').click();
-					// 	// 	$(v).hide(); 
-					// 	// })
-					// 	// $(document).find('.table-bom-child tr.parent-'+_id).find('span.treegrid-expander-expanded').click();
-					// },1700)			
+					}	
 				}
 			});
 		}
