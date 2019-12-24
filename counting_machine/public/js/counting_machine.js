@@ -43,7 +43,14 @@ frappe.ui.form.on('Work Order', {
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
 		// _status = frm.doc.status
-		// console.log(frm.doc)
+		setTimeout(function(){
+			$(document).find('span[data-label="Send to QC"]').closest('li.user-action').show();
+			if(frm.doc.job_started){
+				console.log(frm.doc.job_started)
+				$(document).find('span[data-label="Send to QC"]').closest('li.user-action').hide();
+			}
+		},1000)
+		
 		if(frm.doc.bom_no != undefined && frm.doc.docstatus==0){
 			req = frappe.call({
 				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_time_cycle",
@@ -64,12 +71,12 @@ frappe.ui.form.on('Job Card', {
 		not_good(frm, cdt, cdn)
 		xxx++;			
 	},
-	before_submit:function(frm, cdt, cdn){
-			
-	},	
-	before_remove: function(listview) {
-		// msgprint("Before Remove Called!");		
-	},
+	// before_submit:function(frm, cdt, cdn){
+	// 	console.log(frm.doc)
+	// },	
+	// before_save: function(frm, cdt, cdn) {
+	// 	msgprint("Before save!");
+	// },
 	on_submit:function(frm,cdt,cdn){
 		// console.log('on_submit : ' + cdn)
 		var not_good = 0
@@ -100,6 +107,7 @@ frappe.ui.form.on('Job Card', {
 	}
 
 });
+
 
 // frappe.ui.form.on('Job Card Time Log', {
 // 	not_good: function (frm, cdt, cdn) { 
