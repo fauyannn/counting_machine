@@ -295,16 +295,24 @@ frappe.ui.form.on('Stock Entry', {
 		var job_card = data.job_card;
 		var item;
 		var batch_no;
-		filters = {
-			"work_order": ["=",work_order]
+		if(job_card === null || job_card == undefined){
+			filters = {
+				"work_order": ["=",work_order]
 			}
+		} else {
+			filters = {
+				"name": ["=",job_card]
+			}
+		}
+		console.log(data)
 		$.each(data.items || [], function(k,v){
 			if(v['t_warehouse']){
 				item_code = v['item_code'];
-				if(job_card === null){
+				// if(job_card === null || job_card == undefined){
 					frappe.model.with_doc("Job Card", filters, function(){
 						// console.log(filters)
 						item = frappe.db.get_value("Job Card",filters,['name','workstation','posting_date','shift'], as_dict=false, order_by='creation asc').done(function(data){							
+							// console.log(data.message)
 							batch_id = data.message.posting_date+'/'+data.message.shift+'/'+data.message.workstation;
 							console.log(batch_id)
 							frappe.call({
@@ -314,15 +322,15 @@ frappe.ui.form.on('Stock Entry', {
 									item:item_code
 								},
 								callback: function(r) {
-									console.log(v)
+									// console.log(v)
 									// cur_frm.set_value('items', total_completed_qty)
 									frappe.model.set_value(v.doctype, v.name, "batch_no", batch_id)
-									frm.reload_doc();
+									// frm.reload_doc();
 								}
 							});
 						});						
 					})
-				}
+				// }
 			}
 		})
 
