@@ -69,14 +69,16 @@ frappe.ui.form.on('Job Card', {
 		}
 		// bom_no = 
 		not_good(frm, cdt, cdn)
-		xxx++;			
+		save_production_item(frm,cdt,cdn)
+		xxx++;		
+			
 	},
 	// before_submit:function(frm, cdt, cdn){
 	// 	console.log(frm.doc)
 	// },	
-	// before_save: function(frm, cdt, cdn) {
-	// 	msgprint("Before save!");
-	// },
+	before_save: function(frm, cdt, cdn) {		
+		msgprint("Before save!");
+	},
 	on_submit:function(frm,cdt,cdn){
 		// console.log('on_submit : ' + cdn)
 		var not_good = 0
@@ -104,10 +106,46 @@ frappe.ui.form.on('Job Card', {
 				}
 			});
 		}
+
+		save_batchno(frm,cdt,cdn);
 	}
 
 });
 
+function save_batchno(frm,cdt,cdn){
+	var data = frm.doc
+		var item_code = frm.doc.production_item;
+		
+		batch_id = data.posting_date+'/'+data.shift+'/'+data.workstation;
+		frappe.call({
+			method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.insert_batch_no",
+			args: {
+				batch_id:batch_id,
+				item:item_code
+			},
+			callback: function(r) {
+				console.log(r)
+			}
+		});
+}
+
+function save_production_item(frm,cdt,cdn){
+	var data = frm.doc
+	var production_item = '';
+	console.log(data);
+	
+	filters = {
+		"name": ["=",data.work_order]
+	}
+	frappe.model.with_doc("Work Order", filters, function(){
+		// console.log(filters)
+		item = frappe.db.get_value("Work Order",filters,['production_item']).done(function(d){							
+			production_item = d.message.production_item;
+			// console.log(production_item)
+			frappe.model.set_value('Job Card', data.name, "production_item", production_item)
+		})
+	})
+}
 
 // frappe.ui.form.on('Job Card Time Log', {
 // 	not_good: function (frm, cdt, cdn) { 
@@ -304,6 +342,7 @@ frappe.ui.form.on('Stock Entry', {
 				"name": ["=",job_card]
 			}
 		}
+		// console.log(filters)
 		console.log(data)
 		$.each(data.items || [], function(k,v){
 			if(v['t_warehouse']){
