@@ -325,7 +325,7 @@ function save_production_item(frm,cdt,cdn){
 		})
 	}
 
-frappe.ui.form.on('Stock Entry', {
+frappe.ui.form.on('Stock Entry', {	
 	refresh: function (frm, cdt, cdn) {
 		var data = frm.doc;
 		var item_code = '';
@@ -333,6 +333,13 @@ frappe.ui.form.on('Stock Entry', {
 		var job_card = data.job_card;
 		var item;
 		var batch_no;
+
+		console.log(work_order)
+		setTimeout(function(){
+			$(document).find('[data-fieldname="w_o"]').val(work_order)
+		},1000)
+		
+		
 		if(job_card === null || job_card == undefined){
 			filters = {
 				"work_order": ["=",work_order]
@@ -343,7 +350,6 @@ frappe.ui.form.on('Stock Entry', {
 			}
 		}
 		// console.log(filters)
-		console.log(data)
 		$.each(data.items || [], function(k,v){
 			if(v['t_warehouse']){
 				item_code = v['item_code'];
@@ -373,7 +379,14 @@ frappe.ui.form.on('Stock Entry', {
 			}
 		})
 
-	}
+	},
+	"stock_entry_type": function(frm,cdt,cdn) {
+		var data = frm.doc;
+		var work_order = $(document).find('[data-fieldname="w_o"]').val()
+		console.log(work_order)
+		$(document).find('[data-fieldname="work_order"]').val(work_order)
+        // frappe.msgprint("auto wo : "+work_order);
+	},
 })
 
 var arr = [];
