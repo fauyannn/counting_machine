@@ -40,7 +40,7 @@ frappe.ui.form.on('Job Card', {
 	// 	console.log(frm.doc)
 	// },	
 	before_save: function(frm, cdt, cdn) {		
-		msgprint("Before save!");
+		// msgprint("Before save!");
 	},
 	on_submit:function(frm,cdt,cdn){
 		// console.log('on_submit : ' + cdn)
