@@ -20,7 +20,7 @@ app_include_css = [
     "/assets/css/jquery.treegrid.min.css"
 ]
 app_include_js = [
-    "/assets/counting_machine/js/counting_machine.js",
+    "/assets/js/counting_machine.js",
     "/assets/js/jquery.treegrid.min.js"
 ]
 
@@ -33,7 +33,7 @@ app_include_js = [
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
-doctype_list_js = {"Job Card" : "/assets/counting_machine/js/job_card_list.js"}
+# doctype_list_js = {"Job Card" : "/assets/counting_machine/js/job_card_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 

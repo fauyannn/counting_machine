@@ -4,7 +4,9 @@
     ],
     "js/counting_machine.js": [
         "public/js/counting_machine.js",
-        "public/js/stock_entry.js"
+        "public/js/stock_entry.js",
+        "public/js/bom.js",
+        "public/js/work_order.js"
     ],
     "js/job_card_list.js": [
         "public/js/job_card_list.js"
