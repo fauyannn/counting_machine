@@ -97,7 +97,7 @@ function save_production_item(frm,cdt,cdn){
 	var production_item = '';
 	// console.log(data);
 	
-	filters = {
+	var filters = {
 		"name": ["=",data.work_order]
 	}
 	frappe.model.with_doc("Work Order", filters, function(){
