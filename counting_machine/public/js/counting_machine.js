@@ -104,7 +104,7 @@ function save_production_item(frm,cdt,cdn){
 	};
 	frappe.model.with_doc("Work Order", filters, function(){
 		// console.log(filters)
-		item = frappe.db.get_value("Work Order",filters,['production_item']).done(function(d){							
+		frappe.db.get_value("Work Order",filters,['production_item']).done(function(d){							
 			production_item = d.message.production_item;
 			// console.log(production_item)
 			frappe.model.set_value('Job Card', data.name, "production_item", production_item)
