@@ -3,6 +3,7 @@ var total_row = 0;
 var total_page = 1;
 var _status = '';
 var req = false;
+var datas = [];
 
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
@@ -100,7 +101,7 @@ function save_production_item(frm,cdt,cdn){
 	
 	var filters = {
 		"name": ["=",data.work_order]
-	}
+	};
 	frappe.model.with_doc("Work Order", filters, function(){
 		// console.log(filters)
 		item = frappe.db.get_value("Work Order",filters,['production_item']).done(function(d){							
