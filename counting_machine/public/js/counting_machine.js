@@ -1,7 +1,8 @@
 var xxx = 0;
 var total_row = 0;
 var total_page = 1;
-var _status = ''
+var _status = '';
+var req = false;
 
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
