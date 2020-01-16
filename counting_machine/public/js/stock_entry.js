@@ -1,4 +1,9 @@
 frappe.ui.form.on('Stock Entry', {
+	"stock_entry_type": function(frm) {
+		var data = frm.doc;
+		var work_order = $(document).find('input[data-fieldname="w_o"]').val();
+		$(document).find('input[data-fieldname="work_order"]').val(work_order);
+    },
 	refresh: function (frm, cdt, cdn) {
 		var data = frm.doc;
 		var item_code = '';
@@ -16,8 +21,10 @@ frappe.ui.form.on('Stock Entry', {
 				"name": ["=",job_card]
 			}
 		}
-		// console.log(filters)
-		// console.log(data)
+		setTimeout(function(){
+			$(document).find('input[data-fieldname="w_o"]').val(work_order);
+		},1000)
+		// console.log(work_order)
 		$.each(data.items || [], function(k,v){
 			if(v['t_warehouse']){
 				item_code = v['item_code'];

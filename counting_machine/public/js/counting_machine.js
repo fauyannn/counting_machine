@@ -1,7 +1,3 @@
-$.extend(frappe.breadcrumbs.preferred, {
-	"Dice and Jig": "Manufacturing",
-});
-
 var xxx = 0;
 var total_row = 0;
 var total_page = 1;

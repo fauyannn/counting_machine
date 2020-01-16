@@ -1,3 +1,7 @@
+$.extend(frappe.breadcrumbs.preferred, {
+	"Dice and Jig": "Manufacturing",
+});
+
 var data;
 frappe.ui.form.on('Dice and Jig', {
     refresh: function (frm, cdt, cdn) {
@@ -17,12 +21,9 @@ frappe.ui.form.on('Dice and Jig', {
                         .data('name');
 
             var life_time = $this.val();
-            // console.log(bom_no)
-            // console.log('bom : '+bom_no)
             data.link_to_items[0].bom   = bom_no;
             data.life_time              = life_time.replace(',','.')
-            // console.log(data)
-            // console.log('xx = '+$this.val())
+            
             auto_fill_remaining_time(data)
         })
     }
@@ -39,13 +40,18 @@ function auto_fill_remaining_time(data){
         var _field = ['name','total_time_in_mins','total_setup_time_in_mins','total_stop_time_in_mins','total_hold_time_in_mins']
         frappe.db.get_value("Job Card",filters,_field).done(function(res){
             var dt = res.message;
-            var job_card_time = dt.total_time_in_mins - dt.total_stop_time_in_mins - dt.total_hold_time_in_mins - dt.total_setup_time_in_mins;
-                job_card_time = job_card_time / 60; // convert mins to hours
+            // console.log(res)
+            if(dt==undefined){
+                cur_frm.set_value('remaining_time', 0)
+            } else {
+                var job_card_time = dt.total_time_in_mins - dt.total_stop_time_in_mins - dt.total_hold_time_in_mins - dt.total_setup_time_in_mins;
+                    job_card_time = job_card_time / 60; // convert mins to hours 
 
-            var life_time = data.life_time;
-            var remaining_time = (life_time - job_card_time);
-            $('[data-fieldname="remaining_time"]').val(remaining_time);
-            console.log(res)            
+                var life_time       = data.life_time;
+                var remaining_time  = (life_time - job_card_time);
+                cur_frm.set_value('remaining_time', remaining_time)
+            }            
+            // console.log(life_time+' - '+job_card_time+' = '+remaining_time)
         })
     })
 }
