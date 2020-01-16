@@ -3,7 +3,12 @@ $.extend(frappe.breadcrumbs.preferred, {
 });
 
 var data;
+var $this;
 frappe.ui.form.on('Dice and Jig', {
+    // "link_to_items.bom": function(frm) {
+    //     var data = frm.doc;
+    //     console.log(data)
+    // },
     refresh: function (frm, cdt, cdn) {
         data = frm.doc;
         console.log(data)
@@ -11,7 +16,7 @@ frappe.ui.form.on('Dice and Jig', {
         auto_fill_remaining_time(data)
         $(document).off('keyup','input[data-fieldname="life_time"]');
         $(document).on('keyup','input[data-fieldname="life_time"]',function(){
-            var $this = $(this);
+            $this = $(this);
 
             var bom_no = $('body').find('div[data-fieldname="link_to_items"]:first')
                         .find('.grid-body')
@@ -25,6 +30,30 @@ frappe.ui.form.on('Dice and Jig', {
             data.life_time              = life_time.replace(',','.')
             
             auto_fill_remaining_time(data)
+        })
+
+        $(document).off('change','input[data-fieldname="bom"]');
+        $(document).on('change','input[data-fieldname="bom"]',function(){
+            $this = $(this);
+            var bom_no = $this.val();
+            console.log('bom_no : '+bom_no)
+            var filters = {
+                "name": ["=",bom_no]
+            };
+            frappe.model.with_doc("BOM", filters, function(){
+                // console.log(filters)
+                frappe.db.get_value("BOM",filters,['item','item_name']).done(function(d){	
+                    if(d.message){                        				
+                        var item        = d.message.item;
+                        var item_name   = d.message.item_name;
+                        var data_name   = $this.closest('div.grid-row').data('name');
+                        console.log(item+' : '+item_name)
+                        // $this.closest('div.grid-row').find('input[data-fieldname="item"]').val(item)
+                        frappe.model.set_value('Dice and Jig Item', data_name, "item", item)
+                        // frappe.model.set_value('Job Card', data.name, "production_item", production_item)
+                    }		
+                })
+            })
         })
     }
 })
