@@ -6,6 +6,7 @@ frappe.ui.form.on('Stock Entry', {
     },
 	refresh: function (frm, cdt, cdn) {
 		var data = frm.doc;
+		console.log(data)
 		var item_code = '';
 		var work_order = data.work_order;
 		var job_card = data.job_card;
@@ -26,6 +27,7 @@ frappe.ui.form.on('Stock Entry', {
 		},1000)
 		// console.log(work_order)
 		$.each(data.items || [], function(k,v){
+			console.log(v)
 			if(v['t_warehouse']){
 				item_code = v['item_code'];
 				// if(job_card === null || job_card == undefined){
@@ -51,6 +53,17 @@ frappe.ui.form.on('Stock Entry', {
 						});						
 					})
 				// }
+			}
+			if(v['reference_purchase_receipt']){
+				filters = {
+					"name": ["=",v.reference_purchase_receipt]
+				}
+				var _name = v.reference_purchase_receipt;
+				var _doc;
+				console.log('test1 : '+v.reference_purchase_receipt)
+				_doc = frappe.get_doc("Purchase Receipt",_name);
+				console.log(_doc.items)
+				// })
 			}
 		})
 
