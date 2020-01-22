@@ -11,8 +11,10 @@ frappe.ui.form.on('Stock Entry', {
 		var work_order = data.work_order;
 		var job_card = data.job_card;
 		var item;
-        var batch_no;
-        var filters;
+		var items = [];
+		var batch_no = [];
+		var filters;
+		var reference_purchase_receipt = false;
 		if(job_card === null || job_card == undefined){
 			filters = {
 				"work_order": ["=",work_order]
@@ -28,6 +30,7 @@ frappe.ui.form.on('Stock Entry', {
 		// console.log(work_order)
 		$.each(data.items || [], function(k,v){
 			console.log(v)
+			items[v.item_code] = v.name;
 			if(v['t_warehouse']){
 				item_code = v['item_code'];
 				// if(job_card === null || job_card == undefined){
@@ -55,17 +58,25 @@ frappe.ui.form.on('Stock Entry', {
 				// }
 			}
 			if(v['reference_purchase_receipt']){
-				filters = {
-					"name": ["=",v.reference_purchase_receipt]
-				}
-				var _name = v.reference_purchase_receipt;
-				var _doc;
-				console.log('test1 : '+v.reference_purchase_receipt)
-				_doc = frappe.get_doc("Purchase Receipt",_name);
-				console.log(_doc.items)
-				// })
+				reference_purchase_receipt = v.reference_purchase_receipt				
 			}
 		})
+		if(reference_purchase_receipt){				
+			filters = {
+				"name": ["=",reference_purchase_receipt]
+			}
+			var _doc;
+			console.log('test1 : '+reference_purchase_receipt)
+			_doc = frappe.get_doc("Purchase Receipt",reference_purchase_receipt);
+			$.each(_doc.items || [], function(k,v){
+				// batch_no[v.item_code] = v.batch_no
+				console.log('__ : '+items[v.item_code])
+				frappe.model.set_value("Stock Entry Detail", items[v.item_code], "batch_no", v.batch_no)
+			})
+			// console.log(_doc.items)
+			console.log(items)
+		}
+		
 
 	}
 })
