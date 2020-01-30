@@ -43,8 +43,17 @@ frappe.ui.form.on('Job Card', {
 	// before_submit:function(frm, cdt, cdn){
 	// 	console.log(frm.doc)
 	// },	
-	before_save: function(frm, cdt, cdn) {		
-		// msgprint("Before save!");
+	before_save: function(frm, cdt, cdn) {
+		if (frm.doc.input < 1) {
+			msgprint("The field <b>input</b> must be greater than 0");
+			validated = false;
+		} else if(frm.doc.output < 1){
+			msgprint("The field <b>output</b> must be greater than 0");
+			validated = false;
+		} else if(frm.doc.planned_production_time_in_mins < 1){
+			msgprint("The field <b>Planned Production Time in Mins</b> must be greater than 0");
+			validated = false;
+		}
 	},
 	on_submit:function(frm,cdt,cdn){
 		// console.log('on_submit : ' + cdn)
