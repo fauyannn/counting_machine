@@ -8,6 +8,7 @@ var datas = [];
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
 		// _status = frm.doc.status
+		console.log(frm.doc)
 		setTimeout(function(){
 			$(document).find('span[data-label="Send to QC"]').closest('li.user-action').show();
 			if(frm.doc.job_started){
@@ -18,7 +19,7 @@ frappe.ui.form.on('Job Card', {
 		
 		if(frm.doc.bom_no != undefined && frm.doc.docstatus==0){
 			req = frappe.call({
-				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_time_cycle",
+				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_time_cycle2",
 				args: {
 					bom_no:frm.doc.bom_no,
 					operation:frm.doc.operation,
@@ -28,7 +29,8 @@ frappe.ui.form.on('Job Card', {
 					req = false;
 					datas = res.message
 					// console.log(datas)
-					$(document).find('input[data-fieldname="ideal_cycle_time_in_secs"]').val(datas.data);
+                	cur_frm.set_value('ideal_cycle_time_in_secs', datas.data)
+					// $(document).find('input[data-fieldname="ideal_cycle_time_in_secs"]').val(datas.data);
 				}
 			});
 		}

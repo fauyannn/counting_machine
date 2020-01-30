@@ -414,20 +414,26 @@ def get_bom_tree(bom_no):
 	# return get_children('BOM',bom_no)
 
 @frappe.whitelist()
-def get_time_cycle(bom_no,operation,workstation):
+def get_time_cycle2(bom_no,operation,workstation):
 	filters = {
 		"name" : ["=",bom_no]		
 	}
 	opw = operation+'_'+workstation
 	data = frappe.get_doc('BOM',filters)
+	time = 0
+	time2 = 0
 	if data.operations:
 		for op in data.operations :
-			time = {op.operation+'_'+op.workstation:op.time_in_mins*60}
+			# if op.operation and op.workstation :
+			# 	k = op.operation+'_'+op.workstation
+			# 	time = {k:op.time_in_mins*60}
+			# 	if(op.time_in_mins > 0):
+			time2 = op.time_in_mins*60
 		# return time
-		try:
-			return {'status':'1', 'data':time[opw]}
-		except KeyError:
-			return {'status':'0', 'data':'0'}
-			pass
+		# if opw in time:
+		# 	return {'status':'1', 'data':time[opw]}
+		# else :
+		# 	return {'status':'0', 'data':time2}
+			
 	
-	return {'status':'0', 'data':'0'}
+	return {'status':'0', 'data':time2}

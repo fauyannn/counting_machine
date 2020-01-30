@@ -1,0 +1,32 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.status==\"Stop\"\n",
+ "creation": "2020-01-22 14:29:59.760066",
+ "days_in_advance": 0,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Job Card",
+ "enabled": 1,
+ "event": "Value Change",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "<h3>Job Card Stopped</h3>\n<ul>\n<li>Job Card: {{ doc.name }} has been stopped\n</ul>",
+ "modified": "2020-01-22 14:30:40.598438",
+ "modified_by": "Administrator",
+ "module": "Counting Machine",
+ "name": "Job Card Stop",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "email_by_document_field": "owner",
+   "email_by_role": "Maintenance Manager"
+  },
+  {
+   "email_by_document_field": "owner",
+   "email_by_role": "Maintenance User"
+  }
+ ],
+ "subject": "Job Card {{ doc.name }} Stopped",
+ "value_changed": "status"
+}
