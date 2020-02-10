@@ -29,8 +29,3 @@ frappe.ui.form.on('Purchase Receipt', {
         })
 	}
 })
-frappe.ui.form.on('Item', {
-	refresh: function (frm, cdt, cdn) {
-        console.log(frm.doc)        
-    }
-})
