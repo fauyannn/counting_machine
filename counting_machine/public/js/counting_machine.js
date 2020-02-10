@@ -7,7 +7,6 @@ var datas = [];
 
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
-		$('span[data-label="Cancel"]').parent().removeClass('hide');
 		// _status = frm.doc.status
 		console.log(frm.doc)
 		setTimeout(function(){
@@ -16,6 +15,7 @@ frappe.ui.form.on('Job Card', {
 				console.log(frm.doc.job_started)
 				$(document).find('span[data-label="Send to QC"]').closest('li.user-action').hide();
 			}
+			$('span[data-label="Cancel"]').parent().removeClass('hide');
 		},1000)
 		
 		if(frm.doc.bom_no != undefined && frm.doc.docstatus==0){
