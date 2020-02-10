@@ -21,9 +21,16 @@ frappe.ui.form.on('Purchase Receipt', {
                 callback: function(r) {
                     // console.log(r)
                     // console.log(val.doctype+' _ '+ val.name +' _ '+bacth_no)
-                    frappe.model.set_value(val.doctype, val.name, 'batch_no', bacth_no)                    
+                    if(r.batch_id){
+                        frappe.model.set_value(val.doctype, val.name, 'batch_no', bacth_no)
+                    }                    
                 }
             });
         })
 	}
+})
+frappe.ui.form.on('Item', {
+	refresh: function (frm, cdt, cdn) {
+        console.log(frm.doc)        
+    }
 })

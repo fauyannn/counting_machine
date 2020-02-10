@@ -360,11 +360,19 @@ def updateStatus(doctype,id,status):
 @frappe.whitelist()
 def insert_batch_no(batch_id,item):	
 	filters = {
+		"item_code": ["=",item]
+		}
+	doc_item = frappe.get_doc('Item', item)
+	# return doc_item
+	if not doc_item.has_batch_no:
+		return {'status' : 0,'batch_id':0,'item':item,'doc':doc_item}
+
+	filters = {
 		"batch_id": ["=",batch_id],
 		"item": ["=",item]
 		}
 	doc = frappe.db.get_value('Batch', filters, ['batch_id','item'])
-	if(doc):
+	if doc:
 		return {'status' : 0,'batch_id':batch_id,'item':item,'doc':doc}
 	else: 
 		doc = frappe.get_doc({
