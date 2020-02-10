@@ -7,6 +7,7 @@ var datas = [];
 
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
+		$('span[data-label="Cancel"]').parent().removeClass('hide');
 		// _status = frm.doc.status
 		console.log(frm.doc)
 		setTimeout(function(){
