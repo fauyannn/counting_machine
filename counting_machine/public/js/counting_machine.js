@@ -15,7 +15,15 @@ frappe.ui.form.on('Job Card', {
 				console.log(frm.doc.job_started)
 				$(document).find('span[data-label="Send to QC"]').closest('li.user-action').hide();
 			}
-			$('span[data-label="Cancel"]').parent().removeClass('hide');
+			if(frm.doc.docstatus == 1){
+				$('span[data-label="Cancel"]').parent().removeClass('hide');
+				$('span[data-label="Cancel"]').parent().addClass('my-cancel-button');
+				$(document).off();
+				$(document).on('click','.my-cancel-button', function(){
+					cancel_button(frm,cdt,cdn)
+				})
+			}
+			
 		},1000)
 		
 		if(frm.doc.bom_no != undefined && frm.doc.docstatus==0){
@@ -88,6 +96,33 @@ frappe.ui.form.on('Job Card', {
 	}
 
 });
+
+function cancel_button(frm,cdt,cdn){
+	// console.log(frm.doc)
+	frappe.confirm(
+		'Permanently Cancel '+cdn+'?',
+		function(){
+			frappe.call({
+				method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.cancelButton",
+				args: {
+					doctype:cdt,
+					id:cdn
+				},
+				callback: function(r) {
+					console.log(r)
+					// frappe.model.set_value(cdt, cdn, "docstatus", 2);
+					show_alert(cdn+' has been cancelled');
+					// window.close();
+					frm.reload_doc();
+				}
+			});
+		},
+		function(){
+			window.close();
+		}
+	)
+	// frappe.model.set_value(cdt, cdn, "docstatus", 2);
+}
 
 function save_batchno(frm,cdt,cdn){
 	var data = frm.doc

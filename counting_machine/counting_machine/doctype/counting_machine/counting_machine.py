@@ -358,6 +358,11 @@ def updateStatus(doctype,id,status):
 	return {'success':1,'status' : status,'id':id,'doctype':doctype}
 
 @frappe.whitelist()
+def cancelButton(doctype,id):
+	frappe.db.set_value(doctype, id, "docstatus", 2)
+	return {'success':1,'id':id,'doctype':doctype}
+
+@frappe.whitelist()
 def insert_batch_no(batch_id,item):	
 	filters = {
 		"item_code": ["=",item]
