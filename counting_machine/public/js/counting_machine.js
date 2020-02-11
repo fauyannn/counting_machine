@@ -62,6 +62,9 @@ frappe.ui.form.on('Job Card', {
 		} else if(frm.doc.planned_production_time_in_mins < 1){
 			msgprint("The field <b>Planned Production Time in Mins</b> must be greater than 0");
 			validated = false;
+		} else if(frm.doc.ideal_cycle_time_in_secs < 1){
+			msgprint("The field <b>Ideal Cycle Time in Secs</b> must be greater than 0");
+			validated = false;
 		}
 	},
 	on_submit:function(frm,cdt,cdn){

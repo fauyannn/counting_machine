@@ -33,88 +33,92 @@ def get_cm(rf_id='',mesin_id=''):
 	
 	# return job_card
 	actual = 0
-
-	if job_card:
-		job_id = job_card[2]
-		data = frappe.get_doc('Job Card', job_id)
-		# return data
-		_count = 0	
-		for dt in data.time_logs:
-			_count = dt.idx
-			actual += dt.actual
-		# return dt
-		_now = datetime.now()
-		_job_started = 1
-		if (int(job_card[0]) > 0):
-			_job_started = 0
-			
-			# data.modified = _now
-			data.started_time = data.started_time
-			data.__unsaved = 1
-			data.job_started = 0
-			data.time_logs[(_count-1)].parent = dt.parent
-			data.time_logs[(_count-1)].idx = dt.idx
-			data.time_logs[(_count-1)].name = dt.name
-			data.time_logs[(_count-1)].from_time = dt.from_time
-			data.time_logs[(_count-1)].to_time = _now
-			data.time_logs[(_count-1)].actual = dt.actual
-			data.time_logs[(_count-1)].__unsaved = 1
-			# data.time_logs[(_count-1)].time_in_mins = dt.time_in_mins
-
+	try:
+		if job_card:
+			job_id = job_card[2]
+			data = frappe.get_doc('Job Card', job_id)
 			# return data
+			_count = 0	
+			for dt in data.time_logs:
+				_count = dt.idx
+				actual += dt.actual
+			# return dt
+			_now = datetime.now()
+			_job_started = 1
+			if (int(job_card[0]) > 0):
+				_job_started = 0
+				
+				# data.modified = _now
+				data.started_time = data.started_time
+				data.__unsaved = 1
+				data.job_started = 0
+				data.time_logs[(_count-1)].parent = dt.parent
+				data.time_logs[(_count-1)].idx = dt.idx
+				data.time_logs[(_count-1)].name = dt.name
+				data.time_logs[(_count-1)].from_time = dt.from_time
+				data.time_logs[(_count-1)].to_time = _now
+				data.time_logs[(_count-1)].actual = dt.actual
+				data.time_logs[(_count-1)].__unsaved = 1
+				# data.time_logs[(_count-1)].time_in_mins = dt.time_in_mins
+
+				# return data
+			else:
+				
+				new_idx = _count+1
+				newtime = {
+					"from_time": _now,
+					"docstatus": 0,
+					"doctype": "Job Card Time Log",
+					"__islocal": 1,
+					"__unsaved": 1,
+					"owner": "Administrator",
+					"completed_qty": 0,
+					"parent": job_id,
+					"parentfield": "time_logs",
+					"parenttype": "Job Card",
+					"idx": new_idx 
+					}
+				
+				data.started_time = _now
+				# data.modified = _now
+				data.__unsaved = 1
+				data.job_started = 1
+				# data.total_completed_qty = 10
+				data.append("time_logs", newtime)
+				
+			data.status = 'Send to QC'
+			data.save(
+				ignore_permissions=True, # ignore write permissions during insert
+				ignore_version=True # do not create a version record
+			)
+			frappe.db.commit()
+			# return data
+			
+			filters = {
+				"name": ["=",job_id],
+			}
+			job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','input','output','planned_production_time_in_mins','ideal_cycle_time_in_secs'])
+
+			target = int(job_card[1]) - actual
+
+			return {
+				'status' : job_card[0],
+				'employee_name' : data_employee['employee_name'],
+				'target' : target,
+				'mesin_id' : mesin_id,
+				'job_id' : job_id,
+				'input' : job_card[2],
+				'output' : job_card[3],
+				'actual' : 0, 
+				'planned_production_time' : int(job_card[4]),
+				'ideal_cycle_time' : int(job_card[5])
+			}
 		else:
-			
-			new_idx = _count+1
-			newtime = {
-				"from_time": _now,
-				"docstatus": 0,
-				"doctype": "Job Card Time Log",
-				"__islocal": 1,
-				"__unsaved": 1,
-				"owner": "Administrator",
-				"completed_qty": 0,
-				"parent": job_id,
-				"parentfield": "time_logs",
-				"parenttype": "Job Card",
-				"idx": new_idx 
-				}
-			
-			data.started_time = _now
-			# data.modified = _now
-			data.__unsaved = 1
-			data.job_started = 1
-			# data.total_completed_qty = 10
-			data.append("time_logs", newtime)
-			
-		data.status = 'Send to QC'
-		data.save(
-			ignore_permissions=True, # ignore write permissions during insert
-			ignore_version=True # do not create a version record
-		)
-		frappe.db.commit()
-		# return data
-		
-		filters = {
-			"name": ["=",job_id],
-		}
-		job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','input','output','planned_production_time_in_mins','ideal_cycle_time_in_secs'])
-
-		target = int(job_card[1]) - actual
-
-		return {
-			'status' : job_card[0],
-			'employee_name' : data_employee['employee_name'],
-			'target' : target,
-			'mesin_id' : mesin_id,
-			'job_id' : job_id,
-			'input' : job_card[2],
-			'output' : job_card[3],
-			'actual' : 0, 
-			'planned_production_time' : int(job_card[4]),
-			'ideal_cycle_time' : int(job_card[5])
-		}
-	else:
-		return {'status':'Job Card not available'}
+			return {'status':'Job Card not available'}
+	
+	except Exception as e:
+		return {'status':9, 'message':'ValidationError'}
+		pass
 
 
 @frappe.whitelist()
