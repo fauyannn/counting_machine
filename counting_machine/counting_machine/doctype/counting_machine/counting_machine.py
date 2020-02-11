@@ -18,7 +18,7 @@ def get_cm(rf_id='',mesin_id=''):
 	data_employee = get_employee(rf_id)
 	# return (data_employee)
 	if data_employee['employee_id'] == "0":
-		return {'status':'Employee not found'}
+		return {'status':9,'message':'Employee not found', 'long_message':'Employee not found'}
 
 	employee_id = data_employee['employee_id']
 	filters = {
@@ -114,10 +114,10 @@ def get_cm(rf_id='',mesin_id=''):
 				'ideal_cycle_time' : int(job_card[5])
 			}
 		else:
-			return {'status':'Job Card not available'}
+			return {'status':9,'message':'Job Card not available', 'long_message':'Job Card not available'}
 	
 	except Exception as e:
-		return {'status':9, 'message':'ValidationError'}
+		return {'status':9,'message':'ValidationError', 'long_message':str(e)}
 		pass
 
 
@@ -131,7 +131,7 @@ def set_actual(mesin_id,actual):
 		}
 	# return job_id
 	if job_started == 0:
-		return {'status':'job card hasn\'t started yet'}
+		return {'status':9,'message':'job card hasn\'t started yet','long_message':'job card hasn\'t started yet'}
 
 	job_card_time = frappe.db.get_value('Job Card Time Log', filters, '*', as_dict=True, order_by='idx desc')
 	# job_card_time = frappe.db.get_value('Job Card Time Log', filters, '*')
@@ -190,7 +190,7 @@ def set_actual(mesin_id,actual):
 			'job_id' : job_id
 		}
 	else:
-		return {'status' : 'time log not available'}
+		return {'status':9,'message':'time log not available','long_message':'time log not available'}
 
 
 def get_employee(rf_id):
