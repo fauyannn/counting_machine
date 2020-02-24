@@ -362,6 +362,11 @@ def updateStatus(doctype,id,status):
 	return {'success':1,'status' : status,'id':id,'doctype':doctype}
 
 @frappe.whitelist()
+def updateDataGlobal(doctype,id,field,value):
+	frappe.db.set_value(doctype, id, field, value)
+	return {'success':1,'doctype':doctype,'id' : id,'field':field,'value':value}
+
+@frappe.whitelist()
 def cancelButton(doctype,id):
 	frappe.db.set_value(doctype, id, "docstatus", 2)
 	return {'success':1,'id':id,'doctype':doctype}
@@ -454,3 +459,8 @@ def get_time_cycle2(bom_no,operation,workstation):
 			
 	
 	return {'status':'0', 'data':time2}
+
+@frappe.whitelist()
+def get_purchase_order():
+	data = frappe.get_doc('Purchase Order')
+	return data

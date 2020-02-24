@@ -12,7 +12,7 @@ frappe.ui.form.on('Job Card', {
 		setTimeout(function(){
 			$(document).find('span[data-label="Send to QC"]').closest('li.user-action').show();
 			if(frm.doc.job_started){
-				console.log(frm.doc.job_started)
+				// console.log(frm.doc.job_started)
 				$(document).find('span[data-label="Send to QC"]').closest('li.user-action').hide();
 			}
 			if(frm.doc.docstatus == 1){
