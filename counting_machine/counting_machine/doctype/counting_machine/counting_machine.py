@@ -461,6 +461,6 @@ def get_time_cycle2(bom_no,operation,workstation):
 	return {'status':'0', 'data':time2}
 
 @frappe.whitelist()
-def get_purchase_order():
-	data = frappe.get_doc('Purchase Order')
+def get_purchase_order(docstatus):
+	data = frappe.get_list('Purchase Order',filters={'docstatus': docstatus},fields=['*'])
 	return data
