@@ -474,6 +474,6 @@ def get_all_data(doctype,start,page_length,fields,order_by,filters):
 		fields=fields, # "name, hub_category"
 		order_by= order_by  # 'creation desc'
 		)
-	total_data = frappe.db.count(doctype)
+	total_data = frappe.db.count(doctype,filters=filters)
 
 	return {'data':data,'total_data':total_data}
