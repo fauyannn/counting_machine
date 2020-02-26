@@ -114,7 +114,7 @@ def get_cm(rf_id='',mesin_id=''):
 				'ideal_cycle_time' : int(job_card[5])
 			}
 		else:
-			return {'status':9,'message':'Job Card not available', 'long_message':'Job Card not available'}
+			return {'status':9,'message':'Job not found', 'long_message':'Job Card not available'}
 	
 	except Exception as e:
 		return {'status':9,'message':'ValidationError', 'long_message':str(e)}
