@@ -466,8 +466,9 @@ def get_purchase_order(docstatus):
 	return data
 
 @frappe.whitelist()
-def get_all_data(doctype,start,page_length,fields,order_by):
+def get_all_data(doctype,start,page_length,fields,order_by,filters):	
 	data = frappe.get_all(doctype, 
+		filters=filters,
 		start=start, 
 		page_length=page_length, 
 		fields=fields, # "name, hub_category"
