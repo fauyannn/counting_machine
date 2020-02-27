@@ -23,6 +23,8 @@ frappe.ui.form.on('Job Card', {
 					cancel_button(frm,cdt,cdn)
 				})
 			}
+
+			get_jobcard_error_log(frm,cdt,cdn)
 			
 		},1000)
 		
@@ -339,3 +341,61 @@ function save_production_item(frm,cdt,cdn){
 
 		})
 	}
+
+	function get_jobcard_error_log(frm,cdt,cdn){
+		var _table = '<table class="table table-job-card-error-log table-bordered">'+
+						'<thead>'+
+							'<tr>'+
+								'<th>No</th>'+
+								'<th>Datetime</th>'+
+								'<th>Message</th>'+
+							'</tr>'+
+						'</thead>'+
+						'<tbody>';
+
+		var data_table = '';
+		
+		var end_table = '</tbody>'+
+						'</table>';
+		$.ajax({
+			url:'/api/resource/Job Card Error Log/?fields=["datetime","job_card","message"]&filters=[["job_card", "=", "'+frm.doc.name+'"]]&limit_page_length=5',
+			dataType:'json',
+			type:'GET',
+			data:{},				
+			success : function(data){
+				// console.log(data)
+				if(data.data.length){
+					var no = 0;
+					$.each(data.data,function(i, d){
+						no = parseInt(i + 1);
+						var dt = new Date(d['datetime']);
+						var	date_time = moment(dt).format("DD-MM-YYYY HH:mm:ss");
+						// var	date_time = appendZeroes(dt.getDate())+'-'+appendZeroes(parseInt(dt.getMonth()+1))+'-'+dt.getFullYear()+' '+appendZeroes(dt.getHours())+':'+appendZeroes(dt.getMinutes())+':'+appendZeroes(dt.getSeconds());
+						data_table += '<tr>'+
+								'<td align="center">'+no+'</td>'+
+								'<td align="left">'+date_time+'</td>'+
+								'<td align="left">'+d['message']+'</td>'+									
+							'</tr>';
+					})					
+				} else {
+					data_table += '<tr>'+
+						'<td colspan="3" align="center">no data found.</td>'+
+					'</tr>';
+				}
+				
+				setTimeout(function(){					
+					$('html').find('.form-column div[data-fieldname="error_logs"]')
+					.html(_table+data_table+end_table)
+					
+				},1000)
+
+			}
+
+		})
+	}
+	function appendZeroes(n){
+		if(n <= 9){
+		  return "0" + n;
+		}
+		return n
+	  }

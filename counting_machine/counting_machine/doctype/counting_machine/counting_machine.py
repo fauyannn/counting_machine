@@ -33,9 +33,10 @@ def get_cm(rf_id='',mesin_id=''):
 	
 	# return job_card
 	actual = 0
-	try:
-		if job_card:
-			job_id = job_card[2]
+	if job_card:
+		job_id = job_card[2]
+		_now = datetime.now()
+		try:
 			data = frappe.get_doc('Job Card', job_id)
 			# return data
 			_count = 0	
@@ -43,7 +44,6 @@ def get_cm(rf_id='',mesin_id=''):
 				_count = dt.idx
 				actual += dt.actual
 			# return dt
-			_now = datetime.now()
 			_job_started = 1
 			if (int(job_card[0]) > 0):
 				_job_started = 0
@@ -113,14 +113,25 @@ def get_cm(rf_id='',mesin_id=''):
 				'planned_production_time' : int(job_card[4]),
 				'ideal_cycle_time' : int(job_card[5])
 			}
-		else:
-			return {'status':9,'message':'Job not found', 'long_message':'Job Card not available'}
+		except Exception as e:			
+			job_card_error_log(job_id, _now, str(e))
+			return {'status':9,'message': job_id.strip('PO-')+' Error', 'long_message':str(e)}
+			pass
+
+	else:
+		return {'status':9,'message':'Job not found', 'long_message':'Job Card not available'}
+
+@frappe.whitelist()
+def job_card_error_log(job_id, _now, message):
+	doc = frappe.get_doc({
+        "doctype": "Job Card Error Log",
+        "job_card": 'PO-JOB00020',
+		"datetime": _now,
+		"message": message,
+		"docstatus" : 1
+	}).insert(ignore_permissions=True)
+	return True
 	
-	except Exception as e:
-		return {'status':9,'message':'ValidationError', 'long_message':str(e)}
-		pass
-
-
 @frappe.whitelist()
 def set_actual(mesin_id,actual):
 
@@ -131,7 +142,7 @@ def set_actual(mesin_id,actual):
 		}
 	# return job_id
 	if job_started == 0:
-		return {'status':9,'message':'job card hasn\'t started yet','long_message':'job card hasn\'t started yet'}
+		return {'status':9,'message':'job not started yet','long_message':'job card hasn\'t started yet'}
 
 	job_card_time = frappe.db.get_value('Job Card Time Log', filters, '*', as_dict=True, order_by='idx desc')
 	# job_card_time = frappe.db.get_value('Job Card Time Log', filters, '*')
@@ -190,7 +201,7 @@ def set_actual(mesin_id,actual):
 			'job_id' : job_id
 		}
 	else:
-		return {'status':9,'message':'time log not available','long_message':'time log not available'}
+		return {'status':9,'message':'time log not found','long_message':'time logs not found'}
 
 
 def get_employee(rf_id):
