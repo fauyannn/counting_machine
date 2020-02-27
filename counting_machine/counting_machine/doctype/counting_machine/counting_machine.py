@@ -8,6 +8,7 @@ from frappe import _
 from frappe.model.document import Document
 from datetime import datetime
 import array as arr
+import json
 
 class CountingMachine(Document):
 	pass
@@ -100,6 +101,9 @@ def get_cm(rf_id='',mesin_id=''):
 			job_card = frappe.db.get_value('Job Card', filters, ['job_started','for_quantity','input','output','planned_production_time_in_mins','ideal_cycle_time_in_secs'])
 
 			target = int(job_card[1]) - actual
+
+			# if(target<0):
+				# target = 0
 
 			return {
 				'status' : job_card[0],
@@ -485,6 +489,15 @@ def get_all_data(doctype,start,page_length,fields,order_by,filters):
 		fields=fields, # "name, hub_category"
 		order_by= order_by  # 'creation desc'
 		)
-	total_data = frappe.db.count(doctype,filters=filters)
+		
+	_filters = json.loads(filters) # convert json to object
+	total_data = frappe.db.count(doctype,_filters)
 
-	return {'data':data,'total_data':total_data}
+	return {'data':data,
+			'total_data':total_data,
+			'filters':filters,
+			'start':start,
+			'page_length':page_length,
+			'fields':fields,
+			'order_by':order_by
+			}

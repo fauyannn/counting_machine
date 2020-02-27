@@ -193,6 +193,7 @@ function save_production_item(frm,cdt,cdn){
 			$('div [data-fieldname="time_logs"]:first .rows .grid-row').each(function(index, data){	
 				completed_qty = ($(data).find('[data-fieldname="completed_qty"]').text()).replace('.','').replace('.','').replace('.','');
 				console.log(completed_qty)
+				$(data).find('[data-fieldname="completed_qty"]').val(parseInt(completed_qty))
 				total_completed_qty += parseInt(completed_qty);
 			})
 			// console.log(total_completed_qty)
