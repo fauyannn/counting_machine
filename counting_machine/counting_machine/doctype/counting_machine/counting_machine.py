@@ -501,3 +501,12 @@ def get_all_data(doctype,start,page_length,fields,order_by,filters):
 			'fields':fields,
 			'order_by':order_by
 			}
+
+@frappe.whitelist()
+def get_data_detail(doctype,id):
+	try:
+		data = frappe.get_doc(doctype, id)
+		return {'data':data}
+	except Exception as e:
+		return {'data': []}
+		pass
