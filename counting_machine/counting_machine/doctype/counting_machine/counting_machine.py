@@ -481,13 +481,14 @@ def get_purchase_order(docstatus):
 	return data
 
 @frappe.whitelist()
-def get_all_data(doctype,start,page_length,fields,order_by,filters):	
+def get_all_data(doctype,start,page_length,fields,order_by,filters,group_by=''):	
 	data = frappe.get_all(doctype, 
 		filters=filters,
 		start=start, 
 		page_length=page_length, 
 		fields=fields, # "name, hub_category"
-		order_by= order_by  # 'creation desc'
+		order_by= order_by,  # 'creation desc'
+		group_by=group_by,
 		)
 		
 	_filters = json.loads(filters) # convert json to object
