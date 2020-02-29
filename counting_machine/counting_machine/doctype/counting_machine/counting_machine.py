@@ -129,7 +129,7 @@ def get_cm(rf_id='',mesin_id=''):
 def job_card_error_log(job_id, _now, message):
 	doc = frappe.get_doc({
         "doctype": "Job Card Error Log",
-        "job_card": 'PO-JOB00020',
+        "job_card": job_id,
 		"datetime": _now,
 		"message": message,
 		"docstatus" : 1
@@ -517,4 +517,19 @@ def get_data_detail(doctype,id):
 		return {'data':data}
 	except Exception as e:
 		return {'data': []}
+		pass
+
+@frappe.whitelist()
+def create_data(data):
+	# ex : {
+	# 		"doctype": "Batch",
+	# 		"batch_id": batch_id,
+	# 		"item": item
+	# 	}
+	data = json.loads(data)
+	try:
+		doc = frappe.get_doc(data).insert()
+		return {'success':1,'data':data,'doc':doc}
+	except Exception as e:
+		return {'success':0,'data': [],'message':str(e)}
 		pass
