@@ -50,22 +50,19 @@ frappe.ui.form.on('Job Card', {
 		save_production_item(frm,cdt,cdn)
 		xxx++;		
 
-		setTimeout(function(){
-			// console.log($('.form-inner-toolbar').html());
-			// console.log($(document).find('button[data-label="Complete%20Job"]').length);
-			if($(document).find('button[data-label="Complete%20Job"]').length){
-				// $(document).find('button[data-label="Complete%20Job"]').attr('data-label','Complete%20Job%20Card').text('Complete Job Card');
-				var new_button = '<button data-label="complete_job" class="btn btn-default btn-xs" style="margin-left: 10px;">Complete Job</button>';
-				$(document).find('button[data-label="Complete%20Job"]').hide().after(new_button);
-				// console.log(1111111111);
-			}
-			$(document).find('button[data-label="complete_job"]').on('click',function(e){
-				e.preventDefault();
-				msgprint("Please complete job card via counter machine or andon system");
-				return false;
-			});
-		},2000)
-		
+
+		// complete job via andon and counter machine
+		// setTimeout(function(){
+		// 	if($(document).find('button[data-label="Complete%20Job"]').length){				
+		// 		var new_button = '<button data-label="complete_job" class="btn btn-default btn-xs" style="margin-left: 10px;">Complete Job</button>';
+		// 		$(document).find('button[data-label="Complete%20Job"]').hide().after(new_button);
+		// 	}
+		// 	$(document).find('button[data-label="complete_job"]').on('click',function(e){
+		// 		e.preventDefault();
+		// 		msgprint("Please complete job card via counter machine or andon system");
+		// 		return false;
+		// 	});
+		// },2000)		
 		
 		
 	},
