@@ -495,10 +495,12 @@ def get_all_data(doctype,start,page_length,fields,order_by,filters,group_by=''):
 	# total_data = frappe.db.count(doctype,_filters)
 	total_data = len(frappe.get_list(doctype, 
 		filters=filters,
-		fields='ROW_COUNT()', # "name, hub_category"
+		fields='ROW_COUNT()',
 		group_by=group_by,
 		))
+	# total_data = frappe.db.sql("SELECT count(*)as total from (SELECT count(*) FROM `tab{doctype}` group by {group_by}) as tb1")
 	
+
 	return {'data':data,
 			'total_data':total_data,
 			'filters':filters,
