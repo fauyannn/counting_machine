@@ -482,7 +482,7 @@ def get_purchase_order(docstatus):
 
 @frappe.whitelist()
 def get_all_data(doctype,start,page_length,fields,order_by,filters,group_by=''):	
-	data = frappe.get_all(doctype, 
+	data = frappe.get_list(doctype, 
 		filters=filters,
 		start=start, 
 		page_length=page_length, 
@@ -492,8 +492,13 @@ def get_all_data(doctype,start,page_length,fields,order_by,filters,group_by=''):
 		)
 		
 	_filters = json.loads(filters) # convert json to object
-	total_data = frappe.db.count(doctype,_filters)
-
+	# total_data = frappe.db.count(doctype,_filters)
+	total_data = len(frappe.get_list(doctype, 
+		filters=filters,
+		fields='ROW_COUNT()', # "name, hub_category"
+		group_by=group_by,
+		))
+	
 	return {'data':data,
 			'total_data':total_data,
 			'filters':filters,
