@@ -50,7 +50,7 @@ def get_cm(rf_id='',mesin_id=''):
 				_job_started = 0
 				
 				# data.modified = _now
-				data.started_time = data.started_time
+				data.started_time = ''
 				data.__unsaved = 1
 				data.job_started = 0
 				data.time_logs[(_count-1)].parent = dt.parent
