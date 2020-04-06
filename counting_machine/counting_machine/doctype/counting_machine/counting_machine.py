@@ -481,34 +481,38 @@ def get_purchase_order(docstatus):
 	return data
 
 @frappe.whitelist()
-def get_all_data(doctype,start,page_length,fields,order_by,filters,group_by=''):	
-	data = frappe.get_list(doctype, 
-		filters=filters,
-		start=start, 
-		page_length=page_length, 
-		fields=fields, # "name, hub_category"
-		order_by= order_by,  # 'creation desc'
-		group_by=group_by,
-		)
+def get_all_data(doctype,start,page_length,fields,order_by,filters,group_by=''):
+	try:	
+		data = frappe.get_list(doctype, 
+			filters=filters,
+			start=start, 
+			page_length=page_length, 
+			fields=fields, # "name, hub_category"
+			order_by= order_by,  # 'creation desc'
+			group_by=group_by,
+			)
+			
+		_filters = json.loads(filters) # convert json to object
+		# total_data = frappe.db.count(doctype,_filters)
+		total_data = len(frappe.get_list(doctype, 
+			filters=filters,
+			fields='ROW_COUNT()',
+			group_by=group_by,
+			))
+		# total_data = frappe.db.sql("SELECT count(*)as total from (SELECT count(*) FROM `tab{doctype}` group by {group_by}) as tb1")
 		
-	_filters = json.loads(filters) # convert json to object
-	# total_data = frappe.db.count(doctype,_filters)
-	total_data = len(frappe.get_list(doctype, 
-		filters=filters,
-		fields='ROW_COUNT()',
-		group_by=group_by,
-		))
-	# total_data = frappe.db.sql("SELECT count(*)as total from (SELECT count(*) FROM `tab{doctype}` group by {group_by}) as tb1")
-	
 
-	return {'data':data,
-			'total_data':total_data,
-			'filters':filters,
-			'start':start,
-			'page_length':page_length,
-			'fields':fields,
-			'order_by':order_by
-			}
+		return {'data':data,
+				'total_data':total_data,
+				'filters':filters,
+				'start':start,
+				'page_length':page_length,
+				'fields':fields,
+				'order_by':order_by
+				}
+	except Exception as e:
+		return {'error': 1,'message':str(e)}
+		pass
 
 @frappe.whitelist()
 def get_data_detail(doctype,id):
