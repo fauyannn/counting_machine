@@ -493,12 +493,14 @@ def get_all_data(doctype,start,page_length,fields,order_by,filters,group_by=''):
 			)
 			
 		_filters = json.loads(filters) # convert json to object
-		# total_data = frappe.db.count(doctype,_filters)
-		total_data = len(frappe.get_list(doctype, 
-			filters=filters,
-			fields='ROW_COUNT()',
-			group_by=group_by,
-			))
+		if(group_by == ''):
+			total_data = frappe.db.count(doctype,_filters)
+		else :
+			total_data = len(frappe.get_list(doctype, 
+				filters=filters,
+				fields='ROW_COUNT()',
+				group_by=group_by,
+				))
 		# total_data = frappe.db.sql("SELECT count(*)as total from (SELECT count(*) FROM `tab{doctype}` group by {group_by}) as tb1")
 		
 
