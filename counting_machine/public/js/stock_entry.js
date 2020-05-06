@@ -14,7 +14,7 @@ frappe.ui.form.on('Stock Entry', {
     before_save: function(frm, cdt, cdn) {	
 		// console.log("Before save!")		
     },
-    on_submit:function(frm,cdt,cdn){
+    before_submit:function(frm,cdt,cdn){
 		var data = frm.doc;
 		var work_order = data.work_order;
 		// console.log(data)
