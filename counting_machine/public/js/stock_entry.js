@@ -17,7 +17,7 @@ frappe.ui.form.on('Stock Entry', {
     on_submit:function(frm,cdt,cdn){
 		var data = frm.doc;
 		var work_order = data.work_order;
-		console.log(data)
+		// console.log(data)
 		var item_code = '';
 		var job_card = data.job_card;
 		var item;
@@ -40,7 +40,7 @@ frappe.ui.form.on('Stock Entry', {
         $.each(data.items || [], function(k,v){
 			// console.log(v)
 			items[v.item_code] = v.name;
-			if(v['t_warehouse']){
+			if(v['t_warehouse'] && !v.batch_no){
 				item_code = v['item_code'];
 				// if(job_card === null || job_card == undefined){
 					frappe.model.with_doc("Job Card", filters, function(){
