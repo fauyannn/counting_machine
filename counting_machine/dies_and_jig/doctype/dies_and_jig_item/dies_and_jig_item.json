@@ -4,8 +4,9 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "bom",
-  "item"
+  "item",
+  "item_name",
+  "bom"
  ],
  "fields": [
   {
@@ -13,22 +14,32 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Item",
-   "options": "Item",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "item.default_bom",
+   "fieldname": "bom",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "BOM",
+   "options": "BOM",
    "read_only": 1
   },
   {
-   "fieldname": "bom",
-   "fieldtype": "Link",
+   "fetch_from": "item.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "BOM",
-   "options": "BOM"
+   "label": "Item Name",
+   "read_only": 1
   }
  ],
  "istable": 1,
- "modified": "2020-01-16 16:49:38.149866",
+ "modified": "2020-05-07 01:14:52.950016",
  "modified_by": "Administrator",
- "module": "Dice and Jig Item",
- "name": "Dice and Jig Item",
+ "module": "Dies and Jig",
+ "name": "Dies and Jig Item",
  "owner": "Administrator",
  "permissions": [],
  "quick_entry": 1,
