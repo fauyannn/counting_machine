@@ -6,13 +6,24 @@ frappe.ui.form.on('Stock Entry', {
     },
 	refresh: function (frm, cdt, cdn) {
 		var data = frm.doc;
+		var work_order = data.work_order;
+		setTimeout(function(){
+			$(document).find('input[data-fieldname="w_o"]').val(work_order);
+		},1000)
+	},
+    before_save: function(frm, cdt, cdn) {	
+		// console.log("Before save!")		
+    },
+    on_submit:function(frm,cdt,cdn){
+		var data = frm.doc;
+		var work_order = data.work_order;
 		console.log(data)
 		var item_code = '';
-		var work_order = data.work_order;
 		var job_card = data.job_card;
 		var item;
 		var items = [];
 		var batch_no = [];
+		var batch_id = '';
 		var filters;
 		var reference_purchase_receipt = false;
 		if(job_card === null || job_card == undefined){
@@ -24,27 +35,27 @@ frappe.ui.form.on('Stock Entry', {
 				"name": ["=",job_card]
 			}
 		}
-		setTimeout(function(){
-			$(document).find('input[data-fieldname="w_o"]').val(work_order);
-		},1000)
-		// console.log(work_order)
-		$.each(data.items || [], function(k,v){
-			console.log(v)
+		
+		console.log('AUTO GENERATE BATCH_NO, just type manufacture and target waarehouse != null')
+        $.each(data.items || [], function(k,v){
+			// console.log(v)
 			items[v.item_code] = v.name;
 			if(v['t_warehouse']){
 				item_code = v['item_code'];
 				// if(job_card === null || job_card == undefined){
 					frappe.model.with_doc("Job Card", filters, function(){
 						// console.log(filters)
-						item = frappe.db.get_value("Job Card",filters,['name','workstation','posting_date','shift'], as_dict=false, order_by='creation asc').done(function(data){							
-							// console.log(data.message)
-							batch_id = data.message.posting_date+'/'+data.message.shift+'/'+data.message.workstation;
+						item = frappe.db.get_value("Job Card",filters,['name','workstation','posting_date','shift']).done(function(dt){							
+							console.log(dt.message)
+							batch_id = dt.message.posting_date+'/'+dt.message.shift+'/'+dt.message.workstation+'/'+item_code;
 							// console.log(batch_id)
 							frappe.call({
 								method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.insert_batch_no",
 								args: {
 									batch_id:batch_id,
-									item:item_code
+									item:item_code,
+									doctype:frm.doc.doctype,
+									docname:frm.doc.name
 								},
 								callback: function(r) {
 									// console.log(v)
@@ -61,6 +72,7 @@ frappe.ui.form.on('Stock Entry', {
 				reference_purchase_receipt = v.reference_purchase_receipt				
 			}
 		})
+
 		if(reference_purchase_receipt){				
 			filters = {
 				"name": ["=",reference_purchase_receipt]
@@ -73,10 +85,7 @@ frappe.ui.form.on('Stock Entry', {
 				console.log('__ : '+items[v.item_code])
 				frappe.model.set_value("Stock Entry Detail", items[v.item_code], "batch_no", v.batch_no)
 			})
-			// console.log(_doc.items)
-			console.log(items)
+			// console.log(_doc.items)			
 		}
-		
-
 	}
 })
