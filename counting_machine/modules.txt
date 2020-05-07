@@ -1,3 +1,2 @@
 Counting Machine
-Dice and Jig
-Dice and Jig Item
+Dies and Jig

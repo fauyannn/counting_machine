@@ -1,0 +1,211 @@
+{
+ "autoname": "DJ.#####",
+ "creation": "2020-01-15 13:35:22.997714",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_part",
+  "proses",
+  "item_name",
+  "column_break_2",
+  "posting_date",
+  "asset_name",
+  "is_active",
+  "section_break_4",
+  "link_to_items",
+  "section_break_6",
+  "tinggi_mata_potong",
+  "step_down_grinding",
+  "jumlah_stroke_hingga_dies_aus",
+  "dies_tipe",
+  "life_time_ideal",
+  "life_time_actual",
+  "column_break_9",
+  "remaining",
+  "last_problem",
+  "last_maintance",
+  "section_break_19",
+  "consumable_item",
+  "section_break_20",
+  "attachment",
+  "column_break_22",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "default": "Now",
+   "fieldname": "posting_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Dies and Jig",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "asset_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Asset Name",
+   "options": "Asset",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_problem",
+   "fieldtype": "HTML Editor",
+   "label": "Last Problem"
+  },
+  {
+   "fieldname": "last_maintance",
+   "fieldtype": "Link",
+   "label": "Last Maintance",
+   "options": "Asset Maintenance Log"
+  },
+  {
+   "fieldname": "link_to_items",
+   "fieldtype": "Table",
+   "label": "Link to Items",
+   "options": "Dies and Jig Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is active"
+  },
+  {
+   "fieldname": "item_part",
+   "fieldtype": "Data",
+   "label": "Item Part",
+   "reqd": 1
+  },
+  {
+   "fieldname": "proses",
+   "fieldtype": "Data",
+   "label": "Proses",
+   "reqd": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Link",
+   "label": "Item Name",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "description": "dies_tipe * ((H/S) * Q)",
+   "fieldname": "life_time_ideal",
+   "fieldtype": "Float",
+   "label": "Life Time Ideal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "life_time_actual",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Life Time Actual in stroke",
+   "precision": "2"
+  },
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Attach",
+   "label": "Attachment"
+  },
+  {
+   "fieldname": "section_break_19",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remaining",
+   "fieldtype": "Float",
+   "label": "Remaining Stroke",
+   "precision": "2"
+  },
+  {
+   "fieldname": "consumable_item",
+   "fieldtype": "Table",
+   "label": "Consumable Item",
+   "options": "Dies and Jig Consumable Item"
+  },
+  {
+   "fieldname": "section_break_20",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_22",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "8",
+   "fieldname": "tinggi_mata_potong",
+   "fieldtype": "Float",
+   "label": "Tinggi mata potong (H)"
+  },
+  {
+   "default": "0.25",
+   "fieldname": "step_down_grinding",
+   "fieldtype": "Float",
+   "label": "Step down grinding (S)"
+  },
+  {
+   "fieldname": "jumlah_stroke_hingga_dies_aus",
+   "fieldtype": "Float",
+   "label": "Jumlah stroke hingga dies aus (Q)"
+  },
+  {
+   "fieldname": "dies_tipe",
+   "fieldtype": "Select",
+   "label": "Dies tipe",
+   "options": "SPCC\nSGCC\nZN\nSPHC-P\nSTAINLES\nSK5\nSKTM"
+  }
+ ],
+ "is_submittable": 1,
+ "modified": "2020-05-07 01:47:55.750345",
+ "modified_by": "Administrator",
+ "module": "Dies and Jig",
+ "name": "Dies and Jig",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
