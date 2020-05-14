@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
+from frappe.utils import today
 
 class DiesandJig(Document):
 	def before_submit(self): 
@@ -18,9 +19,9 @@ class DiesandJig(Document):
 				ignore_if_duplicate=True
 			)
 		
-		if not frappe.db.exists("Asset Category", "Uncategorized"):
+		if not frappe.db.exists("Asset Category", "Dies and Jig"):
 			asset_category = frappe.new_doc("Asset Category")
-			asset_category.asset_category_name = "Uncategorized"
+			asset_category.asset_category_name = "Dies and Jig"
 			asset_category.flags.ignore_mandatory = True
 			asset_category.flags.ignore_if_duplicate = True
 			asset_category.insert(
@@ -55,7 +56,9 @@ class DiesandJig(Document):
 				"doctype": "Asset",
 				"asset_name": item_name,
 				"item_code": item.item_code,
-				"gross_purchase_amount": 1
+				"gross_purchase_amount": 1,
+				"is_existing_asset": 1,
+				"available_for_use_date": today()
 			}).insert(ignore_mandatory=True, ignore_if_duplicate=True)
 		else:
 			asset = asset[0]
