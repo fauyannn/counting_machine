@@ -387,7 +387,7 @@ def cancelButton(doctype,id):
 	return {'success':1,'id':id,'doctype':doctype}
 
 @frappe.whitelist()
-def insert_batch_no(batch_id,item):	
+def insert_batch_no(batch_id,item,doctype,docname):	
 	filters = {
 		"item_code": ["=",item]
 		}
@@ -407,7 +407,9 @@ def insert_batch_no(batch_id,item):
 		doc = frappe.get_doc({
 			"doctype": "Batch",
 			"batch_id": batch_id,
-			"item": item
+			"item": item,
+			"source_doctype":doctype,
+			"source_docname":docname
 		}).insert()
 		
 
