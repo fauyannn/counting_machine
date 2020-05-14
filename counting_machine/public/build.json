@@ -7,7 +7,7 @@
         "public/js/stock_entry.js",
         "public/js/bom.js",
         "public/js/work_order.js",
-        "public/js/dice_and_jig.js",
+        "public/js/dies_and_jig.js",
         "public/js/purchase_receipt.js"
     ],
     "js/job_card_list.js": [
