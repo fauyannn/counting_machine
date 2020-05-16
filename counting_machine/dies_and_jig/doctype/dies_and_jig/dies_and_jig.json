@@ -1,5 +1,5 @@
 {
- "autoname": "DJ.#####",
+ "autoname": "format:{item_part}-{proses}-{item_name}",
  "creation": "2020-01-15 13:35:22.997714",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -15,6 +15,7 @@
   "section_break_4",
   "link_to_items",
   "section_break_6",
+  "tebal_material",
   "tinggi_mata_potong",
   "step_down_grinding",
   "jumlah_stroke_hingga_dies_aus",
@@ -182,10 +183,15 @@
    "fieldtype": "Select",
    "label": "Dies tipe",
    "options": "SPCC\nSGCC\nZN\nSPHC-P\nSTAINLES\nSK5\nSKTM"
+  },
+  {
+   "fieldname": "tebal_material",
+   "fieldtype": "Float",
+   "label": "Tebal Material"
   }
  ],
  "is_submittable": 1,
- "modified": "2020-05-07 01:47:55.750345",
+ "modified": "2020-05-14 16:25:05.125689",
  "modified_by": "Administrator",
  "module": "Dies and Jig",
  "name": "Dies and Jig",
