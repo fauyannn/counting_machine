@@ -22,7 +22,7 @@ frappe.ui.form.on('BOM', {
 			'<tr class="treegrid-0"><th>Item Code</th><th>BOM No.</th><th>Qty</th><th>UOM</th></tr>';
 				
 		// if(data_items.length){
-			get_bom_tree(bom_no,false)			
+			get_bom_tree(bom_no,false)
 		// }
 		
 		tree_table += '</table>';
@@ -118,13 +118,12 @@ function buildtable(data_table){
 		// },1500)
 	}
 	setTimeout(function(){
-		$(document).find('.table-bom-child').html(tree_data_table)
+		$(document).find('[data-fieldname="childs"]').html(tree_data_table)
 		$('.tree').treegrid({
 			'initialState': 'collapsed',
 			// 'saveState': true,
 		});
 
-		// console.log(data_active)
 		$.each(data_active, function(k,v){
 			// console.log(v)
 			$('body').find('table.table-bom-child tr[data-bom="'+v+'"]').attr('data-click',1);
