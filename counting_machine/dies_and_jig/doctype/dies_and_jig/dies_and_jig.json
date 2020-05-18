@@ -24,6 +24,7 @@
   "life_time_actual",
   "column_break_9",
   "remaining",
+  "total_stroke",
   "last_problem",
   "last_maintance",
   "section_break_19",
@@ -188,10 +189,15 @@
    "fieldname": "tebal_material",
    "fieldtype": "Float",
    "label": "Tebal Material"
+  },
+  {
+   "fieldname": "total_stroke",
+   "fieldtype": "Float",
+   "label": "Total Stroke"
   }
  ],
  "is_submittable": 1,
- "modified": "2020-05-14 16:25:05.125689",
+ "modified": "2020-05-18 16:59:50.231306",
  "modified_by": "Administrator",
  "module": "Dies and Jig",
  "name": "Dies and Jig",

@@ -113,9 +113,39 @@ frappe.ui.form.on('Job Card', {
 		}
 
 		save_batchno(frm,cdt,cdn);
+		update_diesAndJig_totalStroke(frm,cdt,cdn);
 	}
 
 });
+
+function update_diesAndJig_totalStroke(frm,cdt,cdn){
+	var data = frm.doc;
+	var item = data.production_item;
+	var jc_actual = 0;
+	var total_stroke = 0;
+
+	if(data.time_logs.length){
+		$.each(data.time_logs, function(k,v){
+			jc_actual += v.actual;
+		})
+	}
+	// console.log('jc_actual : '+jc_actual);
+	var filters = {
+		"item_name": ["=",item],
+		"docstatus": ["=",1]
+	}
+	frappe.model.with_doc("Dies and Jig", filters, function(){
+		frappe.db.get_value("Dies and Jig",filters,['name','item_name','total_stroke']).done(function(dt){
+			// console.log(dt.message)
+			if(dt.message){
+				total_stroke = parseInt(jc_actual + dt.message.total_stroke);
+				// console.log('total_stroke : '+total_stroke);
+				frappe.db.set_value("Dies and Jig", dt.message.name, "total_stroke", total_stroke)
+			}
+		})
+	})
+
+}
 
 function cancel_button(frm,cdt,cdn){
 	// console.log(frm.doc)
