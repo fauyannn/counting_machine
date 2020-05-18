@@ -12,7 +12,9 @@ frappe.ui.form.on('Stock Entry', {
 		},1000)
 	},
     before_save: function(frm, cdt, cdn) {	
-		// console.log("Before save!")	
+		// console.log("Before save!")			
+    },
+    before_submit:function(frm,cdt,cdn){
 		var data = frm.doc;
 		var work_order = data.work_order;
 		// console.log(data)
@@ -85,8 +87,5 @@ frappe.ui.form.on('Stock Entry', {
 			})
 			// console.log(_doc.items)			
 		}	
-    },
-    before_submit:function(frm,cdt,cdn){
-		
 	}
 })
