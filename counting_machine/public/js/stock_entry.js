@@ -35,44 +35,44 @@ frappe.ui.form.on('Stock Entry', {
 				"name": ["=",job_card]
 			}
 		}
-		
-		console.log('AUTO GENERATE BATCH_NO, just type manufacture and target waarehouse != null')
-        $.each(data.items || [], function(k,v){
-			// console.log(v)
-			items[v.item_code] = v.name;
-			if(v['t_warehouse'] && !v.batch_no){
-				item_code = v['item_code'];
-				// if(job_card === null || job_card == undefined){
-					frappe.model.with_doc("Job Card", filters, function(){
-						// console.log(filters)
-						item = frappe.db.get_value("Job Card",filters,['name','workstation','posting_date','shift']).done(function(dt){							
-							console.log(dt.message)
-							batch_id = dt.message.posting_date+'/'+dt.message.shift+'/'+dt.message.workstation+'/'+item_code;
-							// console.log(batch_id)
-							frappe.call({
-								method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.insert_batch_no",
-								args: {
-									batch_id:batch_id,
-									item:item_code,
-									doctype:frm.doc.doctype,
-									docname:frm.doc.name
-								},
-								callback: function(r) {
-									// console.log(v)
-									// cur_frm.set_value('items', total_completed_qty)
-									frappe.model.set_value(v.doctype, v.name, "batch_no", batch_id)
-									// frm.reload_doc();
-								}
-							});
-						});						
-					})
-				// }
-			}
-			if(v['reference_purchase_receipt']){
-				reference_purchase_receipt = v.reference_purchase_receipt				
-			}
-		})
-
+		if(data.stock_entry_type == 'Manufacture') {
+			console.log('AUTO GENERATE BATCH_NO, just type manufacture and target waarehouse != null')
+			$.each(data.items || [], function(k,v){
+				// console.log(v)
+				items[v.item_code] = v.name;
+				if(v['t_warehouse'] && !v.batch_no){
+					item_code = v['item_code'];
+					// if(job_card === null || job_card == undefined){
+						frappe.model.with_doc("Job Card", filters, function(){
+							// console.log(filters)
+							item = frappe.db.get_value("Job Card",filters,['name','workstation','posting_date','shift']).done(function(dt){							
+								console.log(dt.message)
+								batch_id = dt.message.posting_date+'/'+dt.message.shift+'/'+dt.message.workstation+'/'+item_code;
+								// console.log(batch_id)
+								frappe.call({
+									method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.insert_batch_no",
+									args: {
+										batch_id:batch_id,
+										item:item_code,
+										doctype:frm.doc.doctype,
+										docname:frm.doc.name
+									},
+									callback: function(r) {
+										// console.log(v)
+										// cur_frm.set_value('items', total_completed_qty)
+										frappe.model.set_value(v.doctype, v.name, "batch_no", batch_id)
+										// frm.reload_doc();
+									}
+								});
+							});						
+						})
+					// }
+				}
+				if(v['reference_purchase_receipt']){
+					reference_purchase_receipt = v.reference_purchase_receipt				
+				}
+			})
+		}
 		if(reference_purchase_receipt){				
 			filters = {
 				"name": ["=",reference_purchase_receipt]
