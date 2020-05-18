@@ -7,6 +7,7 @@ frappe.ui.form.on('Stock Entry', {
 	refresh: function (frm, cdt, cdn) {
 		var data = frm.doc;
 		var work_order = data.work_order;
+		
 		setTimeout(function(){
 			$(document).find('input[data-fieldname="w_o"]').val(work_order);
 		},1000)
@@ -46,8 +47,10 @@ frappe.ui.form.on('Stock Entry', {
 						frappe.model.with_doc("Job Card", filters, function(){
 							// console.log(filters)
 							item = frappe.db.get_value("Job Card",filters,['name','workstation','posting_date','shift']).done(function(dt){							
-								console.log(dt.message)
-								batch_id = dt.message.posting_date+'/'+dt.message.shift+'/'+dt.message.workstation+'/'+item_code;
+								// console.log(dt.message)
+								var parts = dt.message.posting_date.split('-');
+								var dmyDate = parts[2] + '-' + parts[1] + '-' + parts[0];
+								batch_id = dmyDate+'/'+dt.message.shift+'/'+dt.message.workstation+'/'+item_code;
 								// console.log(batch_id)
 								frappe.call({
 									method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.insert_batch_no",
