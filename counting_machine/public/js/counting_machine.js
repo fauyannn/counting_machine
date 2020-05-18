@@ -8,7 +8,7 @@ var datas = [];
 frappe.ui.form.on('Job Card', {
 	refresh: function (frm, cdt, cdn) {
 		// _status = frm.doc.status
-		console.log(frm.doc)
+		// console.log(frm.doc)
 		setTimeout(function(){
 			$(document).find('span[data-label="Send to QC"]').closest('li.user-action').show();
 			if(frm.doc.job_started){
@@ -63,7 +63,6 @@ frappe.ui.form.on('Job Card', {
 		// 		return false;
 		// 	});
 		// },2000)		
-		
 		
 	},
 	// before_submit:function(frm, cdt, cdn){
@@ -129,21 +128,34 @@ function update_diesAndJig_totalStroke(frm,cdt,cdn){
 			jc_actual += v.actual;
 		})
 	}
+	req = frappe.call({
+		method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.auto_update_total_stroke",
+		args: {
+			item_code:item,
+			jc_actual:jc_actual
+		},
+		callback: function(res) {
+			datas = res.message
+			// console.log(res)
+		}
+	});
+	
+
 	// console.log('jc_actual : '+jc_actual);
-	var filters = {
-		"item_name": ["=",item],
-		"docstatus": ["=",1]
-	}
-	frappe.model.with_doc("Dies and Jig", filters, function(){
-		frappe.db.get_value("Dies and Jig",filters,['name','item_name','total_stroke']).done(function(dt){
-			// console.log(dt.message)
-			if(dt.message){
-				total_stroke = parseInt(jc_actual + dt.message.total_stroke);
-				// console.log('total_stroke : '+total_stroke);
-				frappe.db.set_value("Dies and Jig", dt.message.name, "total_stroke", total_stroke)
-			}
-		})
-	})
+	// var filters = {
+	// 	"item_name": ["=",item],
+	// 	"docstatus": ["=",1]
+	// }
+	// frappe.model.with_doc("Dies and Jig", filters, function(){
+	// 	frappe.db.get_value("Dies and Jig",filters,['name','item_name','total_stroke']).done(function(dt){
+	// 		// console.log(dt.message)
+	// 		if(dt.message){
+	// 			total_stroke = parseInt(jc_actual + dt.message.total_stroke);
+	// 			// console.log('total_stroke : '+total_stroke);
+	// 			frappe.db.set_value("Dies and Jig", dt.message.name, "total_stroke", total_stroke)
+	// 		}
+	// 	})
+	// })
 
 }
 

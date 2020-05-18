@@ -541,3 +541,29 @@ def create_data(data):
 	except Exception as e:
 		return {'success':0,'data': [],'message':str(e)}
 		pass
+
+@frappe.whitelist()
+def auto_update_total_stroke(item_code,jc_actual):
+	try:
+		filters = {
+			"item": ["=",item_code],
+			"docstatus":["=",1]
+			}
+		# total_stroke = 0
+		items = frappe.get_list('Dies and Jig Item',filters=filters,fields=['name','parent'])
+		
+		for item in items:
+			_filters = {
+				"name": ["=",item.parent],
+				"is_active":["=",1]
+				}
+			daj = frappe.db.get_value('Dies and Jig', _filters, ['total_stroke'], as_dict=True)
+			# return daj['total_stroke']
+			total_stroke = float(jc_actual) + float(daj['total_stroke'])
+			frappe.db.set_value("Dies and Jig", item.parent, "total_stroke", total_stroke)
+
+		return {'data':items}
+	except Exception as e:
+		return {'error': 1,'message':str(e)}
+		pass
+	

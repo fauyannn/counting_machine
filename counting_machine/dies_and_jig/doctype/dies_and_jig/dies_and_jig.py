@@ -40,7 +40,7 @@ class DiesandJig(Document):
 				"item_code": item_name,
 				"is_stock_item": 0,
 				"is_fixed_asset": 1,
-				"asset_category": "Uncategorized",
+				"asset_category": "Dies and Jig",
 				"item_group": "Asset"
 			}).insert(ignore_mandatory=True, ignore_if_duplicate=True)
 		else:
