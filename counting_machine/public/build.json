@@ -8,7 +8,8 @@
         "public/js/bom.js",
         "public/js/work_order.js",
         "public/js/dies_and_jig.js",
-        "public/js/purchase_receipt.js"
+        "public/js/purchase_receipt.js",
+        "public/js/employee.js"
     ],
     "js/job_card_list.js": [
         "public/js/job_card_list.js"
