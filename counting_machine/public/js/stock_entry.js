@@ -20,7 +20,7 @@ frappe.ui.form.on('Stock Entry', {
 		var work_order = data.work_order;
 		// console.log(data)
 		var item_code = '';
-		var job_card = data.job_card;
+		var job_card = data.job_card_reference;
 		var item;
 		var items = [];
 		var batch_no = [];
