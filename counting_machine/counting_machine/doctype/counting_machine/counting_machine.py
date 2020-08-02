@@ -499,12 +499,34 @@ def generate_array_tree(datas):
 			new_bom_tree[key] = value
 	return new_bom_tree
 
+
+# @frappe.whitelist()
+# def generate_html_tree(datas):
+# 	html = '<tr>'
+# 	if hasattr(datas,'items'):
+# 		for key, value in datas.items():
+# 			html += '<td>'+ value.item_code+'<br/>'+value.item_name+'</td>'
+# 			html +=	'<td>'+value.bom_no+'</td>'
+# 			html +=	'<td>'+str(value.stock_qty)+'</td>'
+# 			html +=	'<td>'+value.stock_uom+'</td>'
+# 			html += generate_html_tree(value.child)
+# 			# html += '</li>'
+# 	html += '</tr>'
+
+# 	return '<table><thead><tr><th>Item Code</th> <th>BOM No</th> <th>QTY</th> <th>UOM</th></tr></thead><tbody>'+html+'</tbody></table>'
+
 @frappe.whitelist()
 def generate_html_tree(datas):
 	html = '<ul>'
 	if hasattr(datas,'items'):
 		for key, value in datas.items():
-			html += '<li>'+value.item_code
+			
+			html += '<li>BOM no :'+ value.bom_no+'<br/>'
+			html += 'Item Code :'+ value.item_code+'<br/>'
+			html += 'Item Name :'+ value.item_name+'<br/>'
+			html += 'QTY :'+ str(value.stock_qty)+'<br/>'
+			html += 'UOM :'+ value.stock_uom+'<br/>'
+
 			html += generate_html_tree(value.child)
 			html += '</li>'
 	html += '</ul>'
