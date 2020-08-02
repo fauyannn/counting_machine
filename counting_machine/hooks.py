@@ -125,9 +125,16 @@ app_include_js = [
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "counting_machine.event.get_events"
 # }
-
+fixtures =  [
+    {
+    "doctype": "Print Format", 
+    "filters": [[
+      "name", "in", ("BOM Tree")
+      ]]
+    }
+]
 jenv = {
 	"methods": [
-		"get_bom_tree_all:counting_machine.counting_machine.doctype.counting_machine.get_bom_tree_all"
+		"get_bom_tree_all:counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_bom_tree_all"
 	]
 }
