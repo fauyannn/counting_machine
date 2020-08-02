@@ -6,10 +6,11 @@ var data_table = [];
 var datas = [];
 var data_active = [];
 var count_click = 0;
+var bom_no = 0;
 frappe.ui.form.on('BOM', {
 	refresh: function (frm, cdt, cdn) {		
 		// console.log(frm.doc)
-		var bom_no = frm.doc.name;
+		bom_no = frm.doc.name;
 		 arr = [];
 		 x =0;
 		 _bom = [];
@@ -64,7 +65,7 @@ function get_bom_tree(bom_no,$this){
 							}
 							x++;
 						})
-						// console.log(data_table)
+						console.log(data_table)
 						setTimeout(function(){
 							buildtable(data_table)
 						},500)
@@ -74,6 +75,30 @@ function get_bom_tree(bom_no,$this){
 		}
 	}	
 }
+
+var i =0;
+function get_bom_tree_all(bom_no,item_code){
+	req = frappe.call({
+		method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.get_bom_tree_all",
+		args: {
+			bom_no:bom_no,
+			item_code:item_code,
+			child: false
+		},
+		callback: function(res) {	
+			req = false;
+			datas = res.message
+			console.log(datas)
+			var html = '<ul class="'+bom_no+'">';
+			$.each(datas, function(k,v){				
+				html += '<li>'+v.parent+'<br>'+v.bom_no+'<br>'+ v.item_code +'</li>';
+			});
+			html += '</ul>';
+			$('div#bom_tree').html(html);
+		}
+	});
+}
+
 function buildtable(data_table){
 	var i = 0;
 	var _sort = 0;
@@ -137,6 +162,15 @@ function buildtable(data_table){
 }
 
 $(document).ready(function(){	
+	// $(document).off('change','select.print-preview-select');
+	// $(document).on('change','select.print-preview-select',function(){
+	// 	var $this = $(this);
+	// 	if($this.val() == 'BOM Tree'){
+	// 		get_bom_tree_all(bom_no);
+	// 		console.log('test : '+$this.val());
+	// 	}
+	// })
+
 	$(document).off('click','.treegrid-expander-expanded');
 	$(document).on('click','.treegrid-expander-expanded',function(){
 		var $this = $(this)

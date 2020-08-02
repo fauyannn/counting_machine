@@ -7,7 +7,11 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 from datetime import datetime
-import array as arr
+import array as array
+import operator
+from collections import OrderedDict
+from pprint import pprint
+
 import json
 
 class CountingMachine(Document):
@@ -452,10 +456,65 @@ def get_bom_tree(bom_no):
 	return bom_items
 	# return get_children('BOM',bom_no)
 
+
+bom_tree = {}
+new_bom_tree = {}
+@frappe.whitelist()
+def get_bom_tree_all(bom_no,item_code,child):	
+	if child == 'false':
+		bom_tree.clear()
+		new_bom_tree.clear()
+
+	bom_items = frappe.get_all('BOM Item',
+			fields=['item_code','item_name', 'bom_no', 'stock_qty', 'stock_uom'],
+			filters=[['parent', '=', bom_no]],
+			order_by='idx asc')
+
+	for bom_item in bom_items:
+		key = bom_item.item_code
+		bom_tree[key] = bom_item
+		if child != 'false':
+			bom_tree[item_code]['child'] = {}
+		
+	for bom_item in bom_items:
+		key = bom_item.item_code
+		
+		if child == 'false': 
+			parent = ''
+		else:
+			parent = item_code
+			bom_tree[parent]['child'][bom_item.item_code] = bom_item
+
+		bom_tree[key]['parent'] = parent
+		if bom_no:
+			get_bom_tree_all(bom_item.bom_no,bom_item.item_code,True)
+	
+	datas = generate_array_tree(bom_tree)
+	return generate_html_tree(datas)
+
+@frappe.whitelist()
+def generate_array_tree(datas):
+	for key,value in datas.items():
+		if value.parent == '' :
+			new_bom_tree[key] = value
+	return new_bom_tree
+
+@frappe.whitelist()
+def generate_html_tree(datas):
+	html = '<ul>'
+	if hasattr(datas,'items'):
+		for key, value in datas.items():
+			html += '<li>'+value.item_code
+			html += generate_html_tree(value.child)
+			html += '</li>'
+	html += '</ul>'
+
+	return html
+
 @frappe.whitelist()
 def get_time_cycle2(bom_no,operation,workstation):
 	filters = {
-		"name" : ["=",bom_no]		
+		"name" : ["=",bom_no]
 	}
 	opw = operation+'_'+workstation
 	data = frappe.get_doc('BOM',filters)

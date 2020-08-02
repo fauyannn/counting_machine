@@ -126,3 +126,8 @@ app_include_js = [
 # 	"frappe.desk.doctype.event.event.get_events": "counting_machine.event.get_events"
 # }
 
+jenv = {
+	"methods": [
+		"get_bom_tree_all:counting_machine.counting_machine.doctype.counting_machine.get_bom_tree_all"
+	]
+}
