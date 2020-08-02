@@ -459,12 +459,14 @@ def get_bom_tree(bom_no):
 
 bom_tree = {}
 new_bom_tree = {}
+# level = 0
 @frappe.whitelist()
-def get_bom_tree_all(bom_no,item_code,child):	
+def get_bom_tree_all(bom_no,item_code,child,level=0):	
 	if child == 'false':
 		bom_tree.clear()
 		new_bom_tree.clear()
 
+	level += 1
 	bom_items = frappe.get_all('BOM Item',
 			fields=['item_code','item_name', 'bom_no', 'stock_qty', 'stock_uom'],
 			filters=[['parent', '=', bom_no]],
@@ -486,11 +488,19 @@ def get_bom_tree_all(bom_no,item_code,child):
 			bom_tree[parent]['child'][bom_item.item_code] = bom_item
 
 		bom_tree[key]['parent'] = parent
+		bom_tree[key]['level'] = level
 		if bom_no:
-			get_bom_tree_all(bom_item.bom_no,bom_item.item_code,True)
+			get_bom_tree_all(bom_item.bom_no,bom_item.item_code,True,level)
 	
 	datas = generate_array_tree(bom_tree)
-	return generate_html_tree(datas)
+	# return datas
+	html = generate_html_tree(datas)
+	_return = '<style>table{border-collapse:collapse;width:100%;}table th{text-align:center;}'
+	for i in range(2,21):
+		_return += 'td.level'+str(i)+'{padding-left:'+str(i)+'0px;}'
+	_return += '</style>'
+	_return += '<table border=\'1\'><thead><tr><th>Item Code</th> <th>BOM No</th> <th>QTY</th> <th>UOM</th></tr></thead><tbody>'+html+'</tbody></table>'
+	return _return
 
 @frappe.whitelist()
 def generate_array_tree(datas):
@@ -500,38 +510,42 @@ def generate_array_tree(datas):
 	return new_bom_tree
 
 
-# @frappe.whitelist()
-# def generate_html_tree(datas):
-# 	html = '<tr>'
-# 	if hasattr(datas,'items'):
-# 		for key, value in datas.items():
-# 			html += '<td>'+ value.item_code+'<br/>'+value.item_name+'</td>'
-# 			html +=	'<td>'+value.bom_no+'</td>'
-# 			html +=	'<td>'+str(value.stock_qty)+'</td>'
-# 			html +=	'<td>'+value.stock_uom+'</td>'
-# 			html += generate_html_tree(value.child)
-# 			# html += '</li>'
-# 	html += '</tr>'
 
-# 	return '<table><thead><tr><th>Item Code</th> <th>BOM No</th> <th>QTY</th> <th>UOM</th></tr></thead><tbody>'+html+'</tbody></table>'
 
 @frappe.whitelist()
 def generate_html_tree(datas):
-	html = '<ul>'
+	html = ''
 	if hasattr(datas,'items'):
 		for key, value in datas.items():
+			html += '<tr>'
+			html += '<td class=\'level'+str(value.level)+'\'>'+ value.item_code+'<br/>'+value.item_name+'</td>'
+			html +=	'<td>'+value.bom_no+'</td>'
+			html +=	'<td>'+str(value.stock_qty)+'</td>'
+			html +=	'<td>'+value.stock_uom+'</td>'
+			html += '</tr>'
 			
-			html += '<li><b>BOM no</b> : '+ (value.bom_no if value.bom_no else '-')+'<br/>'
-			html += '<b>Item Code</b> : '+ value.item_code+'<br/>'
-			html += '<b>Item Name</b> : '+ value.item_name+'<br/>'
-			html += '<b>QTY</b> : '+ str(value.stock_qty)+'<br/>'
-			html += '<b>UOM</b> : '+ value.stock_uom+'<br/>'
-
 			html += generate_html_tree(value.child)
-			html += '</li>'
-	html += '</ul>'
+			# html += '</li>'
 
 	return html
+
+# @frappe.whitelist()
+# def generate_html_tree(datas):
+# 	html = '<ul>'
+# 	if hasattr(datas,'items'):
+# 		for key, value in datas.items():
+			
+# 			html += '<li><b>BOM no</b> : '+ (value.bom_no if value.bom_no else '-')+'<br/>'
+# 			html += '<b>Item Code</b> : '+ value.item_code+'<br/>'
+# 			html += '<b>Item Name</b> : '+ value.item_name+'<br/>'
+# 			html += '<b>QTY</b> : '+ str(value.stock_qty)+'<br/>'
+# 			html += '<b>UOM</b> : '+ value.stock_uom+'<br/>'
+
+# 			html += generate_html_tree(value.child)
+# 			html += '</li>'
+# 	html += '</ul>'
+
+# 	return html
 
 @frappe.whitelist()
 def get_time_cycle2(bom_no,operation,workstation):
