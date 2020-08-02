@@ -521,11 +521,11 @@ def generate_html_tree(datas):
 	if hasattr(datas,'items'):
 		for key, value in datas.items():
 			
-			html += '<li>BOM no :'+ value.bom_no+'<br/>'
-			html += 'Item Code :'+ value.item_code+'<br/>'
-			html += 'Item Name :'+ value.item_name+'<br/>'
-			html += 'QTY :'+ str(value.stock_qty)+'<br/>'
-			html += 'UOM :'+ value.stock_uom+'<br/>'
+			html += '<li><b>BOM no</b> : '+ (value.bom_no if value.bom_no else '-')+'<br/>'
+			html += '<b>Item Code</b> : '+ value.item_code+'<br/>'
+			html += '<b>Item Name</b> : '+ value.item_name+'<br/>'
+			html += '<b>QTY</b> : '+ str(value.stock_qty)+'<br/>'
+			html += '<b>UOM</b> : '+ value.stock_uom+'<br/>'
 
 			html += generate_html_tree(value.child)
 			html += '</li>'
