@@ -518,7 +518,7 @@ def generate_html_tree(datas):
 	if hasattr(datas,'items'):
 		for key, value in datas.items():
 			html += '<tr>'
-			html +=	'<td>'+value.level+'</td>'
+			html +=	'<td>'+str(value.level)+'</td>'
 			html += '<td class=\'level'+str(value.level)+'\'>'+ value.item_code+'<br/>'+value.item_name+'</td>'
 			html +=	'<td>'+value.bom_no+'</td>'
 			html +=	'<td>'+str(value.stock_qty)+'</td>'
