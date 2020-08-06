@@ -497,9 +497,9 @@ def get_bom_tree_all(bom_no,item_code,child,level=0):
 	html = generate_html_tree(datas)
 	_return = '<style>table{border-collapse:collapse;width:100%;}table th{text-align:center;}'
 	for i in range(2,21):
-		_return += 'td.level'+str(i)+'{padding-left:'+str(i)+'0px !important;}'
+		_return += 'td.level'+str(i)+'{padding-left:'+str(i)+'em !important;}'
 	_return += '</style>'
-	_return += '<table border=\'1\'><thead><tr><th>Item Code</th> <th>BOM No</th> <th>QTY</th> <th>UOM</th></tr></thead><tbody>'+html+'</tbody></table>'
+	_return += '<table border=\'1\'><thead><tr><th>Level</th><th>Item Code</th> <th>BOM No</th> <th>QTY</th> <th>UOM</th></tr></thead><tbody>'+html+'</tbody></table>'
 	return _return
 
 @frappe.whitelist()
@@ -518,6 +518,7 @@ def generate_html_tree(datas):
 	if hasattr(datas,'items'):
 		for key, value in datas.items():
 			html += '<tr>'
+			html +=	'<td>'+value.level+'</td>'
 			html += '<td class=\'level'+str(value.level)+'\'>'+ value.item_code+'<br/>'+value.item_name+'</td>'
 			html +=	'<td>'+value.bom_no+'</td>'
 			html +=	'<td>'+str(value.stock_qty)+'</td>'

@@ -13,7 +13,9 @@ frappe.ui.form.on('Stock Entry', {
 		},1000)
 	},
     before_save: function(frm, cdt, cdn) {	
-		// console.log("Before save!")			
+		console.log("Before save!")
+		// var data = frm.doc;
+		// console.log(data.items)
     },
     before_submit:function(frm,cdt,cdn){
 		var data = frm.doc;
@@ -81,11 +83,11 @@ frappe.ui.form.on('Stock Entry', {
 				"name": ["=",reference_purchase_receipt]
 			}
 			var _doc;
-			console.log('test1 : '+reference_purchase_receipt)
+			// console.log('test1 : '+reference_purchase_receipt)
 			_doc = frappe.get_doc("Purchase Receipt",reference_purchase_receipt);
 			$.each(_doc.items || [], function(k,v){
 				// batch_no[v.item_code] = v.batch_no
-				console.log('__ : '+items[v.item_code])
+				// console.log('__ : '+items[v.item_code])
 				frappe.model.set_value("Stock Entry Detail", items[v.item_code], "batch_no", v.batch_no)
 			})
 			// console.log(_doc.items)			
