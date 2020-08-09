@@ -143,7 +143,7 @@ def job_card_error_log(job_id, _now, message):
 @frappe.whitelist()
 def set_actual(mesin_id,actual):
 
-	filters = {"workstation": ["=",mesin_id]}	
+	filters = {"workstation": ["=",mesin_id]}
 	job_id,job_started,for_quantity = frappe.db.get_value('Job Card', filters, ['name','job_started','for_quantity'])	
 	filters = {
 		"parent": ["=",job_id]
@@ -459,9 +459,10 @@ def get_bom_tree(bom_no):
 
 bom_tree = {}
 new_bom_tree = {}
+
 # level = 0
 @frappe.whitelist()
-def get_bom_tree_all(bom_no,item_code,child,level=0):	
+def get_bom_tree_all(bom_no,item_code,child,level=0,parent_number=1,number=1):	
 	if child == 'false':
 		bom_tree.clear()
 		new_bom_tree.clear()
@@ -470,14 +471,26 @@ def get_bom_tree_all(bom_no,item_code,child,level=0):
 	bom_items = frappe.get_all('BOM Item',
 			fields=['item_code','item_name', 'bom_no', 'stock_qty', 'stock_uom'],
 			filters=[['parent', '=', bom_no]],
-			order_by='idx asc')
+			order_by='item_code asc')
 
+	parent_number = parent_number
+	number = 1
 	for bom_item in bom_items:
 		key = bom_item.item_code
 		bom_tree[key] = bom_item
+		bom_tree[key]['number'] = number
 		if child != 'false':
+			level_number = str(parent_number)+'.'+str(number)
+			# bom_tree[key]['parent_number'] = level_number
+			bom_tree[key]['level_number'] = level_number
 			bom_tree[item_code]['child'] = {}
-		
+		else :
+			level_number = number
+			bom_tree[key]['level_number'] = level_number
+			# bom_tree[key]['parent_number'] = ''
+			
+		number += 1
+			
 	for bom_item in bom_items:
 		key = bom_item.item_code
 		
@@ -490,13 +503,13 @@ def get_bom_tree_all(bom_no,item_code,child,level=0):
 		bom_tree[key]['parent'] = parent
 		bom_tree[key]['level'] = level
 		if bom_no:
-			get_bom_tree_all(bom_item.bom_no,bom_item.item_code,True,level)
-	
+			get_bom_tree_all(bom_item.bom_no,bom_item.item_code,True,level,bom_tree[key]['level_number'],bom_tree[key]['number'])
+
 	datas = generate_array_tree(bom_tree)
 	# return datas
 	html = generate_html_tree(datas)
 	_return = '<style>table{border-collapse:collapse;width:100%;}table th{text-align:center;}'
-	for i in range(2,21):
+	for i in range(2,51):
 		_return += 'td.level'+str(i)+'{padding-left:'+str(i)+'em !important;}'
 	_return += '</style>'
 	_return += '<table border=\'1\'><thead><tr><th>Level</th><th>Item Code</th> <th>BOM No</th> <th>QTY</th> <th>UOM</th></tr></thead><tbody>'+html+'</tbody></table>'
@@ -518,7 +531,7 @@ def generate_html_tree(datas):
 	if hasattr(datas,'items'):
 		for key, value in datas.items():
 			html += '<tr>'
-			html +=	'<td>'+str(value.level)+'</td>'
+			html +=	'<td>'+str(value.level_number)+'</td>'
 			html += '<td class=\'level'+str(value.level)+'\'>'+ value.item_code+'<br/>'+value.item_name+'</td>'
 			html +=	'<td>'+value.bom_no+'</td>'
 			html +=	'<td>'+str(value.stock_qty)+'</td>'
@@ -618,6 +631,16 @@ def get_all_data(doctype,start,page_length,fields,order_by,filters,group_by=''):
 def get_data_detail(doctype,id):
 	try:
 		data = frappe.get_doc(doctype, id)
+		return {'data':data}
+	except Exception as e:
+		return {'data': []}
+		pass
+
+@frappe.whitelist()
+def get_data_detail_filters(doctype,filters):
+	try:
+		_filters = json.loads(filters)
+		data = frappe.get_doc(doctype, _filters)
 		return {'data':data}
 	except Exception as e:
 		return {'data': []}
