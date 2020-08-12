@@ -1,13 +1,16 @@
 frappe.ui.form.on('Stock Entry', {
 	"stock_entry_type": function(frm) {
 		var data = frm.doc;
-		var work_order = $(document).find('input[data-fieldname="w_o"]').val();
+		var work_order = $(document).find('input[data-fieldname="w_o"]').val();		
 		$(document).find('input[data-fieldname="work_order"]').val(work_order);
     },
 	refresh: function (frm, cdt, cdn) {
 		var data = frm.doc;
 		var work_order = data.work_order;
-		
+		if(!work_order || work_order == undefined){
+			work_order = getCookie('berdikari_wo')
+		}
+		console.log('wo : '+ getCookie('berdikari_wo'))
 		setTimeout(function(){
 			$(document).find('input[data-fieldname="w_o"]').val(work_order);
 		},1000)
@@ -92,3 +95,25 @@ frappe.ui.form.on('Stock Entry', {
 		}	
 	}
 })
+function setCookie(name,value,days) {
+	var expires = "";
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime() + (days*24*60*60*1000));
+		expires = "; expires=" + date.toUTCString();
+	}
+	document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+function getCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+function eraseCookie(name) {   
+	document.cookie = name+'=; Max-Age=-99999999;';  
+}
