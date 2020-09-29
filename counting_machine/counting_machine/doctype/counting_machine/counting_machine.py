@@ -453,8 +453,27 @@ def get_bom_tree(bom_no):
 		bom_item.parent_bom_qty = bom_doc.quantity
 		bom_item.expandable = 0 if bom_item.bom_no in ('', None)  else 1
 
+		bom_item.with_operations = bom_doc.with_operations
+		bom_item.operation = getOperation(bom_item.bom_no)
+		bom_item.supplier = getSupplier(bom_item.item_code)
+
 	return bom_items
 	# return get_children('BOM',bom_no)
+
+def getSupplier(item_code):
+	doc = frappe.get_doc('Item',item_code)
+	suppliers = ''
+	for d in doc.supplier_items:
+		suppliers += d.supplier+'</br>'
+
+	return suppliers
+
+def getOperation(bom_no):
+	_operation = frappe.db.sql("""SELECT SUM(time_in_mins) FROM `tabBOM Operation` WHERE `parent`=%s""",bom_no)[0][0]
+	if(_operation):
+		return float(_operation) * 60 #convert to seconds
+	else:
+		return 0
 
 
 bom_tree = {}
@@ -512,7 +531,7 @@ def get_bom_tree_all(bom_no,item_code,child,level=0,parent_number=1,number=1):
 	for i in range(2,51):
 		_return += 'td.level'+str(i)+'{padding-left:'+str(i)+'em !important;}'
 	_return += '</style>'
-	_return += '<table border=\'1\'><thead><tr><th>Level</th><th>Item Code</th> <th>BOM No</th> <th>QTY</th> <th>UOM</th></tr></thead><tbody>'+html+'</tbody></table>'
+	_return += '<table border=\'1\'><thead><tr><th>Level</th><th>Item Code</th> <th>BOM No</th> <th>QTY</th> <th>UOM</th><th>Cycle Time</th><th>Supplier</th></tr></thead><tbody>'+html+'</tbody></table>'
 	return _return
 
 @frappe.whitelist()
@@ -536,6 +555,8 @@ def generate_html_tree(datas):
 			html +=	'<td>'+value.bom_no+'</td>'
 			html +=	'<td>'+str(value.stock_qty)+'</td>'
 			html +=	'<td>'+value.stock_uom+'</td>'
+			html +=	'<td>'+getOperation(value.bom_no)+'</td>'
+			html +=	'<td>'+getSupplier(value.item_code)+'</td>'
 			html += '</tr>'
 			
 			html += generate_html_tree(value.child)

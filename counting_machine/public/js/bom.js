@@ -20,7 +20,7 @@ frappe.ui.form.on('BOM', {
 		 datas = [];
 		 count_click = 0;
 		var tree_table = '<table class="tree table-bom-child">'+
-			'<tr class="treegrid-0"><th>Item Code</th><th>BOM No.</th><th>Qty</th><th>UOM</th></tr>';
+			'<tr class="treegrid-0"><th>Item Code</th><th>BOM No.</th><th>Qty</th><th>UOM</th><th>Cycle Time</th><th>Supplier</th></tr>';
 				
 		// if(data_items.length){
 			get_bom_tree(bom_no,false)
@@ -103,7 +103,7 @@ function buildtable(data_table){
 	var i = 0;
 	var _sort = 0;
 	var tree_data_table = '<table class="tree table-bom-child">'+
-		'<tr class="treegrid-0"><th>Item Code</th><th>BOM No.</th><th>Qty</th><th>UOM</th></tr>';
+		'<tr class="treegrid-0"><th>Item Code</th><th>BOM No.</th><th>Qty</th><th>UOM</th><th>Cycle Time</th><th>Supplier</th></tr>';
 	var datas = data_table.sort(dynamicSort("_sort"));
 	var parentid = 0;
 	var datachild = [];
@@ -122,9 +122,11 @@ function buildtable(data_table){
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
 					'<td>'+v.stock_uom+'</td>'+
+					'<td>'+v.operation+'</td>'+
+					'<td>'+v.supplier+'</td>'+
 				'</tr>';
 				if(v.bom_no != '' && _click != 1){
-					tree_data_table += '<tr class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+' tr-loading" data-parent="'+i+'" data-idx="'+parseInt(i+1)+'"><td colspan="4" class="tree-loading">loading...</td></tr>';
+					tree_data_table += '<tr class="treegrid-'+parseInt(i+1)+' parent-treegrid-'+i+' tr-loading" data-parent="'+i+'" data-idx="'+parseInt(i+1)+'"><td colspan="6" class="tree-loading">loading...</td></tr>';
 				}
 				i = i+1;
 			} else {
@@ -133,6 +135,8 @@ function buildtable(data_table){
 					'<td><a class="grey" href="#Form/BOM/'+v.bom_no+'" data-doctype="BOM" data-name="'+v.bom_no+'">'+v.bom_no+'</a></td>'+
 					'<td>'+v.stock_qty+'</td>'+
 					'<td>'+v.stock_uom+'</td>'+
+					'<td>'+v.operation+'</td>'+
+					'<td>'+v.supplier+'</td>'+
 				'</tr>';
 			}
 			
