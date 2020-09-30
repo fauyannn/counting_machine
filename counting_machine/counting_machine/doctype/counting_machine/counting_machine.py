@@ -555,7 +555,7 @@ def generate_html_tree(datas):
 			html +=	'<td>'+value.bom_no+'</td>'
 			html +=	'<td>'+str(value.stock_qty)+'</td>'
 			html +=	'<td>'+value.stock_uom+'</td>'
-			html +=	'<td>'+str(getOperation(value.bom_no))+'</td>'
+			html +=	'<td>'+str(round(getOperation(value.bom_no),3))+'</td>'
 			html +=	'<td>'+str(getSupplier(value.item_code))+'</td>'
 			html += '</tr>'
 			
