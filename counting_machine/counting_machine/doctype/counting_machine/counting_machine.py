@@ -471,7 +471,7 @@ def getSupplier(item_code):
 def getOperation(bom_no):
 	_operation = frappe.db.sql("""SELECT SUM(time_in_mins) FROM `tabBOM Operation` WHERE `parent`=%s""",bom_no)[0][0]
 	if(_operation):
-		return float(_operation) * 60 #convert to seconds
+		return round(float(_operation) * 60, 3) #convert to seconds
 	else:
 		return 0
 
