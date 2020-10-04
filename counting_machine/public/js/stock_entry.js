@@ -10,7 +10,7 @@ frappe.ui.form.on('Stock Entry', {
 		if(!work_order || work_order == undefined){
 			work_order = getCookie('berdikari_wo')
 		}
-		console.log('wo : '+ getCookie('berdikari_wo'))
+		// console.log('wo : '+ getCookie('berdikari_wo'))
 		setTimeout(function(){
 			$(document).find('input[data-fieldname="w_o"]').val(work_order);
 		},1000)
@@ -28,6 +28,7 @@ frappe.ui.form.on('Stock Entry', {
 		var items = [];
 		var batch_no = [];
 		var batch_id = '';
+		var ng = '';
 		var filters;
 		var reference_purchase_receipt = false;
 		if(job_card === null || job_card == undefined){
@@ -40,7 +41,7 @@ frappe.ui.form.on('Stock Entry', {
 			}
 		}
 		if(data.stock_entry_type == 'Manufacture') {
-			console.log('AUTO GENERATE BATCH_NO, just type manufacture and target waarehouse != null')
+			console.log('AUTO GENERATE BATCH_NO, just type manufacture and target waarehouse != null');
 			$.each(data.items || [], function(k,v){
 				// console.log(v)
 				items[v.item_code] = v.name;
@@ -53,8 +54,14 @@ frappe.ui.form.on('Stock Entry', {
 								// console.log(dt.message)
 								var parts = dt.message.posting_date.split('-');
 								var dmyDate = parts[2] + '-' + parts[1] + '-' + parts[0];
-								batch_id = dmyDate+'/'+dt.message.shift+'/'+dt.message.workstation+'/'+item_code;
-								// console.log(batch_id)
+								var ng_warehouse = v['t_warehouse'].split(' NG ');
+								// console.log(ng_warehouse.length);
+									
+								ng = (ng_warehouse.length > 1) ? 'NG/' : '';
+								batch_id = ng+dmyDate+'/'+dt.message.shift+'/'+dt.message.workstation+'/'+item_code;
+								
+								// console.log(batch_id);
+								// wait timer(3000);
 								frappe.call({
 									method:"counting_machine.counting_machine.doctype.counting_machine.counting_machine.insert_batch_no",
 									args: {
@@ -65,6 +72,9 @@ frappe.ui.form.on('Stock Entry', {
 									},
 									callback: function(r) {
 										// console.log(v)
+										ng = (ng_warehouse.length > 1) ? 'NG/' : '';
+										batch_id = ng+dmyDate+'/'+dt.message.shift+'/'+dt.message.workstation+'/'+item_code;
+								
 										// cur_frm.set_value('items', total_completed_qty)
 										frappe.model.set_value(v.doctype, v.name, "batch_no", batch_id)
 										// frm.reload_doc();
